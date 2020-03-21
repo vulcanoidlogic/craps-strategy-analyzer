@@ -1,3 +1,3 @@
-import { getDiceRollInfo } from './build-roll-information.js';
+import { getDiceRolls } from './build-roll-information.js';
 
-console.log(getDiceRollInfo());
+console.log(getDiceRolls());
