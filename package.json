@@ -1,0 +1,26 @@
+{
+  "name": "craps-strategy-analyzer",
+  "version": "0.0.1",
+  "description": "Execute craps strategies against datasets of dice rolls.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vulcanoidlogic/craps-strategy-analyzer.git"
+  },
+  "keywords": [
+    "craps",
+    "strategy"
+  ],
+  "author": "Greg Fulton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vulcanoidlogic/craps-strategy-analyzer/issues"
+  },
+  "homepage": "https://github.com/vulcanoidlogic/craps-strategy-analyzer#readme",
+  "dependencies": {
+    "rxjs": "^6.5.4"
+  }
+}
