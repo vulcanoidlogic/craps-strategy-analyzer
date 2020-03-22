@@ -1,3 +1,4 @@
 import { getDiceRolls } from './build-roll-information.js';
 
-console.log(getDiceRolls());
+const diceRolls = getDiceRolls();
+console.log(diceRolls);

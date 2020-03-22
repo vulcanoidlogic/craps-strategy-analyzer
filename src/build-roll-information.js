@@ -43,12 +43,15 @@ const generateDiceRolls = (rollCnt = 216, seed = new Date().getTime()) => {
 };
 
 const applyOutcomes = (diceRolls = []) => {
-    //shooterId, outcomeCode (D,P,L,W), outcomeValue, isWin, isLose, isComeoutRoll, isSevenOut, isPass, pointValue, , shooterRollCnt, isPointThenImmediatePass, isPointSevenOut,  shooter10Cnt, shooter4Cnt, hornStreakCnt, passStreakCnt, noFieldStreakCnt, noHardWayStreakCnt, sevenStreakCnt,
-    // winStreakCnt, loseStreakCnt
+    //shooterId, outcomeCode (D,P,L,W), outcomeValue, isWin, isLose, isComeoutRoll, isSevenOut, isPass, pointValue, , shooterRollCnt, isPointThenImmediatePass, isPointSevenOut,  shooter10Cnt, shooter4Cnt, hornStreakCnt, passStreakCnt, noFieldStreakCnt, noHardWayStreakCnt, sevenStreakCnt, winStreakCnt, loseStreakCnt
 
     let isPointEstablished = false;
     let pointValue = null;
     let shooter4Cnt = 0;
+    let shooter5Cnt = 0;
+    let shooter6Cnt = 0;
+    let shooter8Cnt = 0;
+    let shooter9Cnt = 0;
     let shooter10Cnt = 0;
     let hornStreakCnt = 0;
     let passStreakCnt = 0;
@@ -64,8 +67,6 @@ const applyOutcomes = (diceRolls = []) => {
         isPointEstablished: false,
         pointValue: null,
         isSevenOut: true,
-        shooter4Cnt: 0,
-        shooter10Cnt: 0,
         hornStreakCnt: 0
     };
     let shooterRollCnt = 0;
@@ -87,7 +88,6 @@ const applyOutcomes = (diceRolls = []) => {
         const isNoField = get(diceRoll, 'isNoField');
         const wasNoField = get(previousOutcome, 'isNoField');
         const isHardWay = get(diceRoll, 'isHardWay');
-        // const wasHardWay = get(previousOutcome, 'isHardWay ');
         const wasSevenOut = get(previousOutcome, 'isSevenOut');
         const wasPointMade = get(previousOutcome, 'isPass');
         const previousTotal = get(previousOutcome, 'total');
@@ -101,6 +101,10 @@ const applyOutcomes = (diceRolls = []) => {
             isComeoutRoll = true;
             shooterAfterNewPointRollCnt = 0;
             shooter4Cnt = 0;
+            shooter5Cnt = 0;
+            shooter6Cnt = 0;
+            shooter8Cnt = 0;
+            shooter9Cnt = 0;
             shooter10Cnt = 0;
             passStreakCnt = 0;
             noFieldStreakCnt = 0;
@@ -109,6 +113,7 @@ const applyOutcomes = (diceRolls = []) => {
             pointValue = null;
             isComeoutRoll = true;
             shooterAfterNewPointRollCnt = 0;
+            isPointEstablished = false;
         }
         if (!isPointEstablished && isElement(POINT_VALUES, total)) {
             isPointEstablished = true;
@@ -203,6 +208,18 @@ const applyOutcomes = (diceRolls = []) => {
         if (total === 4) {
             shooter4Cnt++;
         }
+        if (total === 5) {
+            shooter5Cnt++;
+        }
+        if (total === 6) {
+            shooter6Cnt++;
+        }
+        if (total === 8) {
+            shooter8Cnt++;
+        }
+        if (total === 9) {
+            shooter9Cnt++;
+        }
         if (total === 10) {
             shooter10Cnt++;
         }
@@ -242,6 +259,10 @@ const applyOutcomes = (diceRolls = []) => {
             isPointSevenOut,
             isPointThenImmediatePass,
             shooter4Cnt,
+            shooter5Cnt,
+            shooter6Cnt,
+            shooter8Cnt,
+            shooter9Cnt,
             shooter10Cnt,
             shooterAfterNewPointRollCnt,
             hornStreakCnt,
