@@ -5,7 +5,7 @@ import flow from 'lodash/flow';
 import { MersenneTwister19937 } from 'random-js';
 import { die } from 'random-js';
 import { isElement } from './library';
-import { POINT_VALUES, FIELD_VALUES, HORN_VALUES, CRAPS_VALUES } from './constants';
+import { POINT_VALUES, FIELD_VALUES, HORN_VALUES, CRAPS_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
 
 const buildRollItem = (die1, die2) => {
     const total = die1 + die2;
@@ -13,8 +13,6 @@ const buildRollItem = (die1, die2) => {
     const is7 = total === 7;
 
     const rollInfo = {
-        die1,
-        die2,
         total,
         isHardWay,
         isPoint: isElement(POINT_VALUES, total),
@@ -22,7 +20,9 @@ const buildRollItem = (die1, die2) => {
         isField: isElement(FIELD_VALUES, total),
         isHorn: isElement(HORN_VALUES, total),
         isCraps: isElement(CRAPS_VALUES, total),
-        is7
+        is7,
+        die1,
+        die2
     };
     return rollInfo;
 };
@@ -39,69 +39,219 @@ const generateDiceRolls = (rollCnt = 216, seed = new Date().getTime()) => {
         const roll = buildRollItem(die1, die2);
         return roll;
     });
-    console.log('diceRolls=', diceRolls);
     return diceRolls;
 };
 
 const applyOutcomes = (diceRolls = []) => {
-    //shooterId, outcomeCode (D,P,L,W), outcomeValue, isWin, isLose, isComeoutRoll,
-    // isPSO, passStreakCnt, isSevenOut, nonFieldStreakCnt, hornStreakCnt,
-    // winStreakCnt, loseStreakCnt, pointValue, isPointMade, shooterRollCnt
+    //shooterId, outcomeCode (D,P,L,W), outcomeValue, isWin, isLose, isComeoutRoll, isSevenOut, isPass, pointValue, , shooterRollCnt, isPointThenImmediatePass, isPointSevenOut,  shooter10Cnt, shooter4Cnt, hornStreakCnt, passStreakCnt, noFieldStreakCnt, noHardWayStreakCnt, sevenStreakCnt,
+    // winStreakCnt, loseStreakCnt
 
     let isPointEstablished = false;
     let pointValue = null;
-    let previousOutcome = { shooterId: -1, total: 0, isComeoutRoll: true, isPointEstablished: false, pointValue: null, isSevenOut: true };
+    let shooter4Cnt = 0;
+    let shooter10Cnt = 0;
+    let hornStreakCnt = 0;
+    let passStreakCnt = 0;
+    let noFieldStreakCnt = 0;
+    let noHardWayStreakCnt = 0;
+    let sevenStreakCnt = 0;
+    let winStreakCnt = 0;
+    let loseStreakCnt = 0;
+    let previousOutcome = {
+        shooterId: -1,
+        total: 0,
+        isComeoutRoll: true,
+        isPointEstablished: false,
+        pointValue: null,
+        isSevenOut: true,
+        shooter4Cnt: 0,
+        shooter10Cnt: 0,
+        hornStreakCnt: 0
+    };
     let shooterRollCnt = 0;
+    let shooterAfterNewPointRollCnt = 0;
     const outcomes = map(diceRolls, (diceRoll, diceRollIdx) => {
         let isComeoutRoll = false;
         let isSevenOut = false;
         let isWin = false;
         let isLose = false;
-        let isPointMade = false;
+        let isPass = false;
         let outcomeCode = null;
         let outcomeValue = null;
+        let isPointThenImmediatePass = false;
+        let isPointSevenOut = false;
+        let shooterId = get(previousOutcome, 'shooterId');
+
         const total = get(diceRoll, 'total');
         const is7 = get(diceRoll, 'is7');
+        const isNoField = get(diceRoll, 'isNoField');
+        const wasNoField = get(previousOutcome, 'isNoField');
+        const isHardWay = get(diceRoll, 'isHardWay');
+        // const wasHardWay = get(previousOutcome, 'isHardWay ');
         const wasSevenOut = get(previousOutcome, 'isSevenOut');
-        const wasPointMade = get(previousOutcome, 'isPointMade');
-        let shooterId = get(previousOutcome, 'shooterId');
+        const wasPointMade = get(previousOutcome, 'isPass');
+        const previousTotal = get(previousOutcome, 'total');
+        const wasLose = get(previousOutcome, 'isLose');
+        const wasWin = get(previousOutcome, 'isWin');
+
         if (wasSevenOut) {
             pointValue = null;
             shooterId = `shooter-${diceRollIdx + 1}`;
             shooterRollCnt = 0;
             isComeoutRoll = true;
+            shooterAfterNewPointRollCnt = 0;
+            shooter4Cnt = 0;
+            shooter10Cnt = 0;
+            passStreakCnt = 0;
+            noFieldStreakCnt = 0;
         }
         if (wasPointMade) {
             pointValue = null;
             isComeoutRoll = true;
+            shooterAfterNewPointRollCnt = 0;
         }
         if (!isPointEstablished && isElement(POINT_VALUES, total)) {
             isPointEstablished = true;
             pointValue = total;
-        } else if (!isPointEstablished && isElement([7, 11], total)) {
-            isWin = true;
-            isLose = false;
-        } else if (isPointEstablished && (is7 || total === pointValue)) {
-            isPointEstablished = false;
-            if (is7) {
-                isWin = false;
-                isLose = true;
-                isSevenOut = true;
-                outcomeCode = 'D';
-                outcomeValue = total;
-            } else if (total === pointValue) {
+        } else if (isPointEstablished && isElement(POINT_VALUES, total)) {
+            shooterAfterNewPointRollCnt++;
+            if (total === pointValue) {
                 isWin = true;
                 isLose = false;
-                isPointMade = true;
+                isPass = true;
                 outcomeCode = 'P';
                 outcomeValue = total;
+                if (shooterAfterNewPointRollCnt === 1) {
+                    isPointThenImmediatePass = true;
+                }
+                if (wasPointMade) {
+                    passStreakCnt++;
+                }
+                if (wasWin || wasPointMade) {
+                    winStreakCnt++;
+                } else {
+                    if (isWin || isPass) {
+                        winStreakCnt = 1;
+                    } else {
+                        winStreakCnt = 0;
+                    }
+                }
+                loseStreakCnt = 0;
+            }
+        } else if (!isPointEstablished && isElement(PASS_LINE_LOSE_VALUES, total)) {
+            isWin = false;
+            isLose = true;
+            outcomeCode = 'L';
+            outcomeValue = total;
+            if (wasLose || wasSevenOut) {
+                loseStreakCnt++;
+            } else {
+                if (isLose || isSevenOut) {
+                    loseStreakCnt = 1;
+                } else {
+                    loseStreakCnt = 0;
+                }
+            }
+            winStreakCnt = 0;
+        } else if (!isPointEstablished && isElement(PASS_LINE_WIN_VALUES, total)) {
+            isWin = true;
+            isLose = false;
+            outcomeCode = 'W';
+            outcomeValue = total;
+            if (wasWin || wasPointMade) {
+                winStreakCnt++;
+            } else {
+                if (isWin || isPass) {
+                    winStreakCnt = 1;
+                } else {
+                    winStreakCnt = 0;
+                }
+            }
+            loseStreakCnt = 0;
+        } else if (isPointEstablished && is7) {
+            isPointEstablished = false;
+            isWin = false;
+            isLose = true;
+            isSevenOut = true;
+            outcomeCode = 'D';
+            outcomeValue = total;
+            if (shooterAfterNewPointRollCnt === 0) {
+                isPointSevenOut = true;
+            }
+            if (wasLose || wasSevenOut) {
+                loseStreakCnt++;
+            } else {
+                if (isLose || isSevenOut) {
+                    loseStreakCnt = 1;
+                } else {
+                    loseStreakCnt = 0;
+                }
+            }
+            winStreakCnt = 0;
+        } else if (isPointEstablished && isElement(HORN_VALUES, total)) {
+            shooterAfterNewPointRollCnt++;
+        }
+        if (isElement(HORN_VALUES, total) && isElement(HORN_VALUES, previousTotal)) {
+            hornStreakCnt++;
+        } else {
+            if (isElement(HORN_VALUES, total)) {
+                hornStreakCnt = 1;
+            } else {
+                hornStreakCnt = 0;
             }
         }
-        if (diceRollIdx === 0) {
-            isComeoutRoll = true;
+        if (total === 4) {
+            shooter4Cnt++;
         }
+        if (total === 10) {
+            shooter10Cnt++;
+        }
+        if (isNoField && wasNoField) {
+            noFieldStreakCnt++;
+        } else {
+            noFieldStreakCnt = 0;
+        }
+        if (isHardWay) {
+            noHardWayStreakCnt = 1;
+        } else {
+            noHardWayStreakCnt++;
+        }
+        if (is7) {
+            sevenStreakCnt++;
+        } else {
+            sevenStreakCnt = 0;
+        }
+        if (isLose === false && isWin === false) {
+            winStreakCnt = 0;
+            loseStreakCnt = 0;
+        }
+
         shooterRollCnt++;
-        const outcomeItem = { shooterId, isComeoutRoll, isPointEstablished, pointValue, isLose, isWin, isSevenOut, shooterRollCnt, outcomeCode, outcomeValue };
+        const outcomeItem = {
+            shooterId,
+            isComeoutRoll,
+            isPointEstablished,
+            pointValue,
+            isLose,
+            isWin,
+            isPass,
+            isSevenOut,
+            shooterRollCnt,
+            outcomeCode,
+            outcomeValue,
+            isPointSevenOut,
+            isPointThenImmediatePass,
+            shooter4Cnt,
+            shooter10Cnt,
+            shooterAfterNewPointRollCnt,
+            hornStreakCnt,
+            passStreakCnt,
+            noFieldStreakCnt,
+            noHardWayStreakCnt,
+            sevenStreakCnt,
+            loseStreakCnt,
+            winStreakCnt
+        };
         const outcome = assign({}, diceRoll, outcomeItem);
         previousOutcome = outcome;
         return outcome;
