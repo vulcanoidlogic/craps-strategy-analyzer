@@ -245,7 +245,6 @@ const applyOutcomes = (diceRolls = []) => {
 
         shooterRollCnt++;
         const outcomeItem = {
-            shooterId,
             isComeoutRoll,
             isPointEstablished,
             pointValue,
@@ -258,6 +257,7 @@ const applyOutcomes = (diceRolls = []) => {
             outcomeValue,
             isPointSevenOut,
             isPointThenImmediatePass,
+            shooterId,
             shooter4Cnt,
             shooter5Cnt,
             shooter6Cnt,

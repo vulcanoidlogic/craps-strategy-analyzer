@@ -1,0 +1,205 @@
+https://xstate.js.org/viz/?gist=5a4d78e133196e8455ed62d389fb47a1
+
+    // Available variables:
+  // - Machine
+  // - interpret
+  // - assign
+  // - send
+  // - sendParent
+  // - spawn
+  // - raise
+  // - actions
+  // - XState (all XState exports)
+  const getDiceTotal = () => {
+    return 5;
+  }
+  const getPointNumber = () => {
+    return 6;
+  }
+  
+  const isPointOff = (context, event) => {
+    return !context.isPointOn;
+  }
+  const isStart = (context, event) => {
+     return context.diceTotal === null;
+  }  
+  const isRollResolved = (context, event) => {
+     return context.rollResolved === true;
+  }  
+  const isPassLineWinAndDontPassLineLose = (context, event) => {
+    const {diceTotal} = context;
+     return (diceTotal === 7 || diceTotal === 11);
+  }
+  const isPassLineLoseAndDontPassLinePush = (context, event) => {
+    const {diceTotal} = context;
+    return (diceTotal === 12);
+  }
+  const isPassLineLoseAndDontPassLineWin = (context, event) => {
+    const {diceTotal} = context;
+     return (diceTotal === 2 || diceTotal === 3);
+  }
+  const isPointPass = (context, event) => {
+    console.log('isPointPass, context=', context);
+    return (context.diceTotal !== context.pointNumber );    
+  }
+  const isPointDontPass = (context, event) => {
+    return (context.diceTotal === 7 );    
+  }
+  const isBoxNumber = (context, event) => {
+    const {diceTotal} = context;
+    return (diceTotal === 4 || diceTotal === 5 || diceTotal === 6 || diceTotal === 8 || diceTotal === 9 || diceTotal === 10)    
+  }
+
+  const crapsMachine = Machine({
+    id: 'craps',
+    initial: 'start',
+    context: {
+      diceTotal: null,
+      rollResolved: false,
+      pointNumber: null,
+      bets: []
+    },
+    states: {
+      start: {
+        on: {
+          ROLL_DICE: {
+            cond: isStart,
+            target: 'point_off.dice_rolled',
+            actions: ['setDiceTotal']
+          }
+        }
+      },
+      point_off: {
+        states: {
+          roll_resolved: {
+            on: {
+              ROLL_DICE: [{
+                  cond: isRollResolved,
+                  target: 'dice_rolled',
+                  actions: ['setDiceTotal']
+              }]
+            }
+          },
+          dice_rolled: {
+            on: {
+              DICE_ROLLED: [
+              {
+                cond: isPassLineWinAndDontPassLineLose,
+                target: 'pass_line_win_and_dont_pass_line_lose',
+                actions: ['handleDiceRolled', 'setRollResolved']
+              },
+              {
+                cond: isPassLineLoseAndDontPassLineWin,
+                target: 'pass_line_lose_and_dont_pass_line_win',
+                actions: ['handleDiceRolled', 'setRollResolved']
+              },
+              {
+                cond: isPassLineLoseAndDontPassLinePush,
+                target: 'pass_line_lose_and_dont_pass_line_push',
+                actions: ['handleDiceRolled', 'setRollResolved']
+              },
+              {
+              cond: isBoxNumber,
+              target: 'transition_to_point_on',
+                actions: ['handleDiceRolled', 'setRollResolved',
+                'setPointNumber']
+              }
+              ]
+            }
+          },
+          pass_line_win_and_dont_pass_line_lose: {
+            on: {BETS_PAID: '#craps.point_off.roll_resolved'}
+          },
+          pass_line_lose_and_dont_pass_line_push: {
+            on: {BETS_PAID: '#craps.point_off.roll_resolved'}
+          },
+          pass_line_lose_and_dont_pass_line_win          : {
+            on: {BETS_PAID: '#craps.point_off.roll_resolved'}
+          },
+          transition_to_point_on: {
+            on: {BETS_PAID: {target:'#craps.point_on.point_established', actions: ['setRollResolved']}            
+            }
+          }
+        }
+      },
+      point_on: {
+        states: {
+          point_established: {
+            on: {
+              ROLL_DICE: {
+                target: 'dice_rolled',
+                actions: ['setDiceTotal', 'setPointNumber']
+              }
+            }
+          },
+          roll_resolved: {
+            on: {
+              ROLL_DICE: [{
+                  cond: isRollResolved,
+                  target: 'dice_rolled',
+                  actions: ['setDiceTotal']
+              }]
+            }
+          },
+          dice_rolled: {
+            on: {
+              DICE_ROLLED: [
+              {
+                cond: isPointPass,
+                target: 'point_pass',
+                actions: ['handleDiceRolled', 'setRollResolved']
+              },
+              {
+                cond: isPointDontPass,
+                target: 'point_dont_pass',
+                actions: ['handleDiceRolled', 'setRollResolved']
+              }
+              ]
+            }
+          },
+          point_pass: {
+            on: {BETS_PAID: '#craps.point_off.roll_resolved'}
+          },
+          point_dont_pass: {
+            on: {BETS_PAID: '#craps.point_off.roll_resolved'}
+          }
+        }
+      },
+      continue_roll: {
+        on: {BETS_PAID: 'point_off'}
+      },
+      point_dont_pass_off: {
+        on: {BETS_PAID: 'point_off'}
+      },
+      point_pass_off: {
+        on: {BETS_PAID: 'point_on'}
+      }
+    },
+  },
+    {
+      guards: {
+        isStart,
+        isRollResolved,
+        isPointPass,
+        isPointDontPass,
+        isPassLineLoseAndDontPassLinePush,
+        isPassLineLoseAndDontPassLineWin,        
+        isPassLineWinAndDontPassLineLose,
+        isBoxNumber
+      },
+    actions: {
+      handleDiceRolled: (context, event, actionMeta)=>{
+          console.log('in handleDiceRolled', context, event, actionMeta)
+          return true;
+        },
+      setDiceTotal: assign({
+        diceTotal: ({ diceTotal }) => getDiceTotal()
+      }),        
+      setPointNumber: assign({
+        pointNumber: ({ pointNumber }) => getPointNumber()
+      }),        
+      setRollResolved: assign({
+        rollResolved: ({ rollResolved }) => !rollResolved
+      })        
+    }
+  });
