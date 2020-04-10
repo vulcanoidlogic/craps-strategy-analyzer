@@ -15,146 +15,135 @@ const getDiceTotal = () => {
     const dice2 = Math.floor(Math.random() * 6) + 1;
     return dice1 + dice2;
 };
-const getPointNumber = context => {
+const isPointOff = (context, event) => {
+    return context.pointNumber === null;
+};
+const isDiceRollIncludes = (context, event, stateGuard) => {
     const { diceTotal } = context;
-    return diceTotal;
-};
-const isStart = (context, event) => {
-    return context.diceTotal === null;
-};
-const isRollResolved = (context, event) => {
-    return context.rollResolved === true;
-};
-const isPassLineWinAndDontPassLineLose = (context, event) => {
-    const { diceTotal } = context;
-    return diceTotal === 7 || diceTotal === 11;
-};
-const isPassLineLoseAndDontPassLinePush = (context, event) => {
-    const { diceTotal } = context;
-    return diceTotal === 12;
-};
-const isPassLineLoseAndDontPassLineWin = (context, event) => {
-    const { diceTotal } = context;
-    return diceTotal === 2 || diceTotal === 3;
+    const { diceValues = [] } = stateGuard.cond;
+    return diceValues.includes(diceTotal);
 };
 const isPointPass = (context, event) => {
     const { diceTotal, pointNumber } = context;
-    return diceTotal === pointNumber;
-};
-const isPointDontPass = (context, event) => {
-    return context.diceTotal === 7;
-};
-const isBoxNumber = (context, event) => {
-    const { diceTotal } = context;
-    return diceTotal === 4 || diceTotal === 5 || diceTotal === 6 || diceTotal === 8 || diceTotal === 9 || diceTotal === 10;
+    return diceTotal !== null && diceTotal === pointNumber;
 };
 const isPointContinueRoll = (context, event) => {
     const { diceTotal, pointNumber } = context;
     return diceTotal !== 7 && diceTotal !== pointNumber;
 };
-const isPointNumberNotEmpty = (context, event) => {
-    const { pointNumber } = context;
-    return pointNumber !== null;
-};
-
 const crapsMachine = Machine(
     {
         id: 'craps',
         initial: 'start',
         context: {
             diceTotal: null,
-            rollResolved: false,
             pointNumber: null,
-            bets: []
+            bets: [],
         },
         states: {
             start: {
                 on: {
-                    ROLL_DICE: {
-                        cond: isStart,
-                        target: 'point_off.dice_rolled',
-                        actions: ['setDiceTotal']
-                    }
-                }
+                    JOIN_GAME: {
+                        cond: isPointOff,
+                        target: 'point_off.accept_bets',
+                    },
+                },
             },
             point_off: {
-                initial: 'roll_resolved',
+                initial: 'accept_bets',
                 states: {
-                    roll_resolved: {
+                    end: {
+                        type: 'final',
+                    },
+                    accept_bets: {
+                        on: {
+                            MAKE_BETS: [
+                                {
+                                    target: 'ready_to_roll',
+                                    actions: ['makeBets'],
+                                },
+                            ],
+                            LEAVE_GAME: 'end',
+                        },
+                    },
+                    ready_to_roll: {
                         on: {
                             ROLL_DICE: [
                                 {
-                                    cond: isRollResolved,
                                     target: 'dice_rolled',
-                                    actions: ['setDiceTotal']
-                                }
-                            ]
-                        }
+                                    actions: ['setDiceTotal'],
+                                },
+                            ],
+                        },
                     },
                     dice_rolled: {
                         entry: () => console.log('entry point_off dice rolled'),
                         on: {
                             DICE_ROLLED: [
                                 {
-                                    cond: isPassLineWinAndDontPassLineLose,
+                                    id: 'seven-eleven',
+                                    cond: { type: 'isDiceRollIncludes', diceValues: [7, 11] },
                                     target: 'pass_line_win_and_dont_pass_line_lose',
-                                    actions: ['handleDiceRolled', 'setRollResolved']
+                                    actions: ['handleDiceRolled'],
                                 },
                                 {
-                                    cond: isPassLineLoseAndDontPassLineWin,
+                                    id: 'two-three',
+                                    cond: { type: 'isDiceRollIncludes', diceValues: [2, 3] },
                                     target: 'pass_line_lose_and_dont_pass_line_win',
-                                    actions: ['handleDiceRolled', 'setRollResolved']
+                                    actions: ['handleDiceRolled'],
                                 },
                                 {
-                                    cond: isPassLineLoseAndDontPassLinePush,
+                                    id: 'twelve',
+                                    cond: { type: 'isDiceRollIncludes', diceValues: [12] },
                                     target: 'pass_line_lose_and_dont_pass_line_push',
-                                    actions: ['handleDiceRolled', 'setRollResolved']
+                                    actions: ['handleDiceRolled'],
                                 },
                                 {
-                                    cond: isBoxNumber,
-                                    target: 'transition_to_point_on',
-                                    actions: ['handleDiceRolled', 'setRollResolved', 'setPointNumber']
-                                }
-                            ]
+                                    id: 'box-number',
+                                    cond: { type: 'isDiceRollIncludes', diceValues: [4, 5, 6, 8, 9, 10] },
+                                    target: 'point_established',
+                                    actions: ['handleDiceRolled', 'setPointNumber'],
+                                },
+                            ],
                         },
-                        exit: () => console.log('exit point_off dice rolled')
+                        exit: () => console.log('exit point_off dice rolled'),
                     },
                     pass_line_win_and_dont_pass_line_lose: {
-                        on: { PAY_BETS: '#craps.point_off.roll_resolved' }
+                        on: { RECONCILE_BETS: '#craps.point_off.ready_to_roll' },
                     },
                     pass_line_lose_and_dont_pass_line_push: {
-                        on: { PAY_BETS: '#craps.point_off.roll_resolved' }
+                        on: { RECONCILE_BETS: '#craps.point_off.ready_to_roll' },
                     },
                     pass_line_lose_and_dont_pass_line_win: {
-                        on: { PAY_BETS: '#craps.point_off.roll_resolved' }
+                        on: { RECONCILE_BETS: '#craps.point_off.ready_to_roll' },
                     },
-                    transition_to_point_on: {
-                        on: { PAY_BETS: { target: '#craps.point_on.point_established', actions: ['setRollResolved', 'payBetsNewPoint'] } }
-                    }
-                }
+                    point_established: {
+                        on: { RECONCILE_BETS: { target: '#craps.point_on.accept_bets', actions: ['reconcileBetsNewPoint'] } },
+                    },
+                },
             },
             point_on: {
-                initial: 'roll_resolved',
+                initial: 'accept_bets',
                 states: {
-                    point_established: {
+                    accept_bets: {
                         on: {
-                            ROLL_DICE: {
-                                cond: isPointNumberNotEmpty,
-                                target: 'dice_rolled',
-                                actions: ['setDiceTotal']
-                            }
-                        }
+                            MAKE_BETS: [
+                                {
+                                    target: 'ready_to_roll',
+                                    actions: ['makeBets'],
+                                },
+                            ],
+                        },
                     },
-                    roll_resolved: {
+                    ready_to_roll: {
                         on: {
                             ROLL_DICE: [
                                 {
-                                    cond: isRollResolved,
                                     target: 'dice_rolled',
-                                    actions: ['setDiceTotal']
-                                }
-                            ]
-                        }
+                                    actions: ['setDiceTotal'],
+                                },
+                            ],
+                        },
                     },
                     dice_rolled: {
                         on: {
@@ -162,46 +151,37 @@ const crapsMachine = Machine(
                                 {
                                     cond: isPointPass,
                                     target: 'point_pass',
-                                    actions: ['handleDiceRolled', 'setRollResolved', 'resetPointNumber']
+                                    actions: ['handleDiceRolled', 'resetPointNumber'],
                                 },
                                 {
-                                    cond: isPointDontPass,
+                                    cond: { type: 'isDiceRollIncludes', diceValues: [7] },
                                     target: 'point_dont_pass',
-                                    actions: ['handleDiceRolled', 'setRollResolved', 'resetPointNumber']
+                                    actions: ['handleDiceRolled', 'resetPointNumber'],
                                 },
                                 {
                                     cond: isPointContinueRoll,
                                     target: 'continue_roll',
-                                    actions: ['handleDiceRolled', 'setRollResolved']
-                                }
-                            ]
-                        }
+                                    actions: ['handleDiceRolled'],
+                                },
+                            ],
+                        },
                     },
                     point_pass: {
-                        on: { PAY_BETS: { target: '#craps.point_off.roll_resolved', actions: ['payBetsPointPass'] } }
+                        on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointPass'] } },
                     },
                     point_dont_pass: {
-                        on: { PAY_BETS: { target: '#craps.point_off.roll_resolved', actions: ['payBetsPointDontPass'] } }
+                        on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointDontPass'] } },
                     },
                     continue_roll: {
-                        on: { PAY_BETS: { target: 'roll_resolved', actions: ['payBetsPointContinueRoll'] } }
-                    }
-                }
-            }
-        }
+                        on: { RECONCILE_BETS: { target: 'accept_bets', actions: ['reconcileBetsPointContinueRoll'] } },
+                    },
+                },
+            },
+        },
     },
     {
         guards: {
-            isStart,
-            isRollResolved,
-            isPointPass,
-            isPointDontPass,
-            isPassLineLoseAndDontPassLinePush,
-            isPassLineLoseAndDontPassLineWin,
-            isPassLineWinAndDontPassLineLose,
-            isBoxNumber,
-            isPointContinueRoll,
-            isPointNumberNotEmpty
+            isDiceRollIncludes,
         },
         actions: {
             handleDiceRolled: (context, event, actionMeta) => {
@@ -212,34 +192,34 @@ const crapsMachine = Machine(
                 const diceTotal = getDiceTotal();
                 console.log('in setDiceTotal new diceTotal=', diceTotal);
                 return {
-                    diceTotal
+                    diceTotal,
                 };
             }),
             setPointNumber: assign({
-                pointNumber: ({ diceTotal }) => diceTotal
+                pointNumber: ({ diceTotal }) => diceTotal,
             }),
             resetPointNumber: assign({
-                pointNumber: null
+                pointNumber: null,
             }),
-            setRollResolved: assign({
-                rollResolved: true
+            reconcileBetsNewPoint: (context, event, actionMeta) => {
+                // console.log('in reconcileBetsNewPoint', context, event, actionMeta);
+                return true;
+            },
+            reconcileBetsPointPass: (context, event, actionMeta) => {
+                // console.log('in reconcileBetsPointPass', context, event, actionMeta);
+                return true;
+            },
+            reconcileBetsPointDontPass: (context, event, actionMeta) => {
+                // console.log('in reconcileBetsPointDontPass', context, event, actionMeta);
+                return true;
+            },
+            reconcileBetsPointContinueRoll: (context, event, actionMeta) => {
+                // console.log('in reconcileBetsPointContinueRoll', context, event, actionMeta);
+                return true;
+            },
+            makeBets: assign({
+                bets: (_, event) => event.bets,
             }),
-            payBetsNewPoint: (context, event, actionMeta) => {
-                console.log('in payBetsNewPoint', context, event, actionMeta);
-                return true;
-            },
-            payBetsPointPass: (context, event, actionMeta) => {
-                console.log('in payBetsPointPass', context, event, actionMeta);
-                return true;
-            },
-            payBetsPointDontPass: (context, event, actionMeta) => {
-                console.log('in payBetsPointDontPass', context, event, actionMeta);
-                return true;
-            },
-            payBetsPointContinueRoll: (context, event, actionMeta) => {
-                console.log('in payBetsPointContinueRoll', context, event, actionMeta);
-                return true;
-            }
-        }
+        },
     }
 );
