@@ -229,7 +229,7 @@ const crapsMachine = Machine(
     }
 );
 const crapsGame = interpret(crapsMachine)
-    .onTransition((state) => console.log(state.value))
+    // .onTransition((state) => console.log(state.value))
     .start();
 
 const step1 = crapsGame.send('JOIN_GAME');
@@ -246,7 +246,9 @@ for (let i = 0; i < MAX_ROLL_CNT + 10; i++) {
         crapsGame.send('ROLL_DICE');
         const step4 = crapsGame.send('DICE_ROLLED');
         const diceTotal = step4.context.diceTotal;
-        diceRollHistory.push(diceTotal);
+        // console.log('step4.value=', step4.value);
+        const rollHistory = { diceTotal, outcome: step4.value };
+        diceRollHistory.push(rollHistory);
         crapsGame.send('RECONCILE_BETS');
     }
 }
