@@ -13,11 +13,9 @@ const getDiceTotal = () => {
     return dice1 + dice2;
 };
 const isPointOff = (context, event) => {
-    console.log('isPointOff guard');
     return context.pointNumber === null;
 };
 const isMaxRollCntReached = (context, event) => {
-    console.log('isMaxRollCntReached rollCnt=', context.rollCnt);
     return context.rollCnt >= MAX_ROLL_CNT;
 };
 const isDiceRollIncludes = (context, event, stateGuard) => {
@@ -26,7 +24,6 @@ const isDiceRollIncludes = (context, event, stateGuard) => {
     return diceValues.includes(diceTotal);
 };
 const isPointPass = (context, event) => {
-    console.log('isPointPass called');
     const { diceTotal, pointNumber } = context;
     return diceTotal !== null && diceTotal === pointNumber;
 };
@@ -82,7 +79,7 @@ const crapsMachine = Machine(
                         },
                     },
                     dice_rolled: {
-                        entry: () => console.log('entry point_off dice rolled'),
+                        // entry: () => console.log('entry point_off dice rolled'),
                         on: {
                             DICE_ROLLED: [
                                 {
@@ -111,7 +108,7 @@ const crapsMachine = Machine(
                                 },
                             ],
                         },
-                        exit: () => console.log('exit point_off dice rolled'),
+                        // exit: (context, state) => console.log('exit point_off dice rolled, context=', context),
                     },
                     pass_line_win_and_dont_pass_line_lose: {
                         on: { RECONCILE_BETS: '#craps.point_off.ready_to_roll' },
@@ -151,6 +148,7 @@ const crapsMachine = Machine(
                         },
                     },
                     dice_rolled: {
+                        // entry: () => console.log('entry point_on dice rolled'),
                         on: {
                             DICE_ROLLED: [
                                 {
@@ -170,6 +168,7 @@ const crapsMachine = Machine(
                                 },
                             ],
                         },
+                        // exit: (context, state) => console.log('exit point_on dice rolled, context=', context),
                     },
                     point_pass: {
                         on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointPass'] } },
@@ -236,23 +235,23 @@ const crapsGame = interpret(crapsMachine)
 const step1 = crapsGame.send('JOIN_GAME');
 console.log('crapsGame step1.nextEvents=', step1.nextEvents);
 
+const diceRollHistory = [];
 for (let i = 0; i < MAX_ROLL_CNT + 10; i++) {
-    const step1_1 = crapsGame.send('LEAVE_GAME');
-    if (step1_1.changed) {
+    const step = crapsGame.send('LEAVE_GAME');
+    if (step.changed) {
         console.log('allowed to leave game and GAME OVER');
         break;
     } else {
-        console.log('NOT allowed to leave game i=', i);
-        const step2 = crapsGame.send({ type: 'MAKE_BETS', bets: [0, 2, 3, 4, 5] });
-        console.log('crapsGame step2=', step2.value, step2.nextEvents);
+        crapsGame.send({ type: 'MAKE_BETS', bets: [0, 2, 3, 4, 5] });
         crapsGame.send('ROLL_DICE');
         const step4 = crapsGame.send('DICE_ROLLED');
-        console.log('crapsGame step4=', step4.value, step4.nextEvents);
-        const step5 = crapsGame.send('RECONCILE_BETS');
+        const diceTotal = step4.context.diceTotal;
+        diceRollHistory.push(diceTotal);
+        crapsGame.send('RECONCILE_BETS');
     }
 }
 
-console.log('Reached end of gamme');
+console.log('Reached end of game diceRollHistory=', diceRollHistory);
 
 // const toggleMachine = Machine({
 //     id: 'toggle',
