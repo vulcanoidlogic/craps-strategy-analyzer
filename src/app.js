@@ -6,7 +6,7 @@ const diceRolls = getDiceRolls();
 
 // Stateless machine definition
 // machine.transition(...) is a pure function used by the interpreter.
-const MAX_ROLL_CNT = 0;
+const MAX_ROLL_CNT = 5;
 const getDiceTotal = () => {
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
@@ -196,7 +196,7 @@ const crapsMachine = Machine(
             }),
             setDiceTotal: assign((context, event) => {
                 const diceTotal = getDiceTotal();
-                console.log('in setDiceTotal new diceTotal=', diceTotal);
+                // console.log('in setDiceTotal new diceTotal=', diceTotal);
                 return {
                     diceTotal,
                 };
@@ -235,43 +235,49 @@ const crapsGame = interpret(crapsMachine)
 
 const step1 = crapsGame.send('JOIN_GAME');
 console.log('crapsGame step1.nextEvents=', step1.nextEvents);
-const step1_1 = crapsGame.send('LEAVE_GAME');
-const step2 = crapsGame.send({ type: 'MAKE_BETS', bets: [0, 2, 3, 4, 5] });
-console.log('crapsGame step2=', step2.value, step2.nextEvents, step2.context);
-crapsGame.send('ROLL_DICE');
-const step4 = crapsGame.send('DICE_ROLLED');
-console.log('crapsGame step4=', step4.nextEvents, step4.context);
-const step5 = crapsGame.send('RECONCILE_BETS');
-const step6 = crapsGame.send({ type: 'MAKE_BETS', bets: [1, 6, 2] });
-const step7 = crapsGame.send('ROLL_DICE');
-console.log('crapsGame step7=', step7.nextEvents, step7.context);
-const step8 = crapsGame.send('DICE_ROLLED');
-console.log('crapsGame step8=', step8.nextEvents, step8.context);
 
-const toggleMachine = Machine({
-    id: 'toggle',
-    initial: 'active',
-    states: {
-        indeterminate: { on: { TOGGLE: 'active' } },
-        active: { on: { TOGGLE: 'inactive' } },
-        inactive: { on: { TOGGLE: 'indeterminate' } },
-    },
-});
+for (let i = 0; i < MAX_ROLL_CNT + 10; i++) {
+    const step1_1 = crapsGame.send('LEAVE_GAME');
+    if (step1_1.changed) {
+        console.log('allowed to leave game and GAME OVER');
+        break;
+    } else {
+        console.log('NOT allowed to leave game i=', i);
+        const step2 = crapsGame.send({ type: 'MAKE_BETS', bets: [0, 2, 3, 4, 5] });
+        console.log('crapsGame step2=', step2.value, step2.nextEvents);
+        crapsGame.send('ROLL_DICE');
+        const step4 = crapsGame.send('DICE_ROLLED');
+        console.log('crapsGame step4=', step4.value, step4.nextEvents);
+        const step5 = crapsGame.send('RECONCILE_BETS');
+    }
+}
 
-// Machine instance with internal state
-const toggleService = interpret(toggleMachine)
-    .onTransition((state) => console.log(state.value))
-    .start();
-// => 'active'
+console.log('Reached end of gamme');
 
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
-toggleService.send('TOGGLE');
+// const toggleMachine = Machine({
+//     id: 'toggle',
+//     initial: 'active',
+//     states: {
+//         indeterminate: { on: { TOGGLE: 'active' } },
+//         active: { on: { TOGGLE: 'inactive' } },
+//         inactive: { on: { TOGGLE: 'indeterminate' } },
+//     },
+// });
+
+// // Machine instance with internal state
+// const toggleService = interpret(toggleMachine)
+//     .onTransition((state) => console.log(state.value))
+//     .start();
+// // => 'active'
+
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
+// toggleService.send('TOGGLE');
 
 /**
  * Game States: no_point, point
