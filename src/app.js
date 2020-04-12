@@ -7,7 +7,7 @@ const diceRolls = getDiceRolls();
 
 // Stateless machine definition
 // machine.transition(...) is a pure function used by the interpreter.
-const MAX_ROLL_CNT = 5;
+const MAX_ROLL_CNT = 12;
 const getDiceTotal = () => {
     const dice1 = Math.floor(Math.random() * 6) + 1;
     const dice2 = Math.floor(Math.random() * 6) + 1;
@@ -217,7 +217,8 @@ const crapsMachine = Machine(
             makeBets: assign({
                 bets: (_, event) => event.bets,
             }),
-            setShooterId: assign((context, event) => {
+            setShooterId: assign((context, event, actionMeta) => {
+                console.log('in setShooterId', actionMeta.state.history);
                 const rollOutcome = context.rollOutcome;
                 let shooterId = context.shooterId;
                 if (rollOutcome === 'DONT_PASS') {
@@ -238,7 +239,7 @@ const step1 = crapsGame.send('JOIN_GAME');
 console.log('crapsGame step1.nextEvents=', step1.nextEvents);
 
 const diceRollHistory = [];
-for (let i = 0; i < MAX_ROLL_CNT + 10; i++) {
+for (let i = 0; i < MAX_ROLL_CNT + 15; i++) {
     const step = crapsGame.send('LEAVE_GAME');
     if (step.changed) {
         console.log('allowed to leave game and GAME OVER');
