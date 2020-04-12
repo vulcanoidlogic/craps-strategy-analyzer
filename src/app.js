@@ -1,5 +1,6 @@
 import { Machine, createMachine, interpret, assign } from 'xstate';
 import { getDiceRolls } from './build-roll-information.js';
+import { get, uniqueId } from 'lodash';
 
 const diceRolls = getDiceRolls();
 // console.log(diceRolls);
@@ -40,6 +41,8 @@ const crapsMachine = Machine(
             pointNumber: null,
             bets: [],
             rollCnt: 0,
+            rollOutcome: 'INDETERMINATE',
+            shooterId: `shooter-${uniqueId()}`,
         },
         states: {
             start: {
@@ -62,7 +65,7 @@ const crapsMachine = Machine(
                             MAKE_BETS: [
                                 {
                                     target: 'ready_to_roll',
-                                    actions: ['makeBets'],
+                                    actions: ['makeBets', 'setShooterId'],
                                 },
                             ],
                             LEAVE_GAME: [{ cond: isMaxRollCntReached, target: 'end' }],
@@ -189,13 +192,11 @@ const crapsMachine = Machine(
         },
         actions: {
             handleDiceRolled: assign((context, event, actionMeta) => {
-                // console.log('in handleDiceRolled', context, event, actionMeta);
                 const rollCnt = context.rollCnt + 1;
                 return { rollCnt };
             }),
             setDiceTotal: assign((context, event) => {
                 const diceTotal = getDiceTotal();
-                // console.log('in setDiceTotal new diceTotal=', diceTotal);
                 return {
                     diceTotal,
                 };
@@ -206,24 +207,25 @@ const crapsMachine = Machine(
             resetPointNumber: assign({
                 pointNumber: null,
             }),
-            reconcileBetsNewPoint: (context, event, actionMeta) => {
-                // console.log('in reconcileBetsNewPoint', context, event, actionMeta);
-                return true;
-            },
-            reconcileBetsPointPass: (context, event, actionMeta) => {
-                // console.log('in reconcileBetsPointPass', context, event, actionMeta);
-                return true;
-            },
-            reconcileBetsPointDontPass: (context, event, actionMeta) => {
-                // console.log('in reconcileBetsPointDontPass', context, event, actionMeta);
-                return true;
-            },
+            reconcileBetsNewPoint: assign({ rollOutcome: 'INDETERMINATE' }),
+            reconcileBetsPointPass: assign({ rollOutcome: 'PASS' }),
+            reconcileBetsPointDontPass: assign({ rollOutcome: 'DONT_PASS' }),
             reconcileBetsPointContinueRoll: (context, event, actionMeta) => {
                 // console.log('in reconcileBetsPointContinueRoll', context, event, actionMeta);
                 return true;
             },
             makeBets: assign({
                 bets: (_, event) => event.bets,
+            }),
+            setShooterId: assign((context, event) => {
+                const rollOutcome = context.rollOutcome;
+                let shooterId = context.shooterId;
+                if (rollOutcome === 'DONT_PASS') {
+                    shooterId = `shooter-${uniqueId()}`;
+                }
+                return {
+                    shooterId,
+                };
             }),
         },
     }
@@ -245,9 +247,10 @@ for (let i = 0; i < MAX_ROLL_CNT + 10; i++) {
         crapsGame.send({ type: 'MAKE_BETS', bets: [0, 2, 3, 4, 5] });
         crapsGame.send('ROLL_DICE');
         const step4 = crapsGame.send('DICE_ROLLED');
-        const diceTotal = step4.context.diceTotal;
+        const diceTotal = get(step4, 'context.diceTotal');
+        const shooterId = get(step4, 'context.shooterId');
         // console.log('step4.value=', step4.value);
-        const rollHistory = { diceTotal, outcome: step4.value };
+        const rollHistory = { diceTotal, shooterId, outcome: step4.value };
         diceRollHistory.push(rollHistory);
         crapsGame.send('RECONCILE_BETS');
     }
