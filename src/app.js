@@ -1,6 +1,6 @@
-import { Machine, createMachine, interpret, assign } from 'xstate';
+import { Machine, interpret, assign } from 'xstate';
 import { getDiceRolls } from './build-roll-information.js';
-import { get, uniqueId } from 'lodash';
+import { get, uniqueId, values } from 'lodash';
 
 const diceRolls = getDiceRolls();
 // console.log(diceRolls);
@@ -228,13 +228,24 @@ const crapsMachine = Machine(
                 // console.log('in reconcileBetsPointContinueRoll', context, event, actionMeta);
                 return true;
             },
-            makeBets: assign({
-                bets: (_, event) => event.bets,
-            }),
+            makeBets: assign({ bets: (_, event) => event.bets }),
             setShooterId: assign({ shooterId: `shooter-${uniqueId()}` }),
         },
     }
 );
+
+// win, loss, pass, dont-pass
+const winLossPassDontPass = (wlpd) => {
+    const lookup = {
+        pass_line_win_and_dont_pass_line_lose: 'W',
+        pass_line_lose_and_dont_pass_line_push: 'L',
+        pass_line_lose_and_dont_pass_line_win: 'L',
+        point_pass: 'P',
+        point_dont_pass: 'D',
+    };
+    return lookup[wlpd] || null;
+};
+
 const crapsGame = interpret(crapsMachine)
     // .onTransition((state) => console.log(state.value))
     .start();
@@ -251,10 +262,11 @@ for (let i = 0; i < MAX_ROLL_CNT + 15; i++) {
         crapsGame.send({ type: 'MAKE_BETS', bets: [0, 2, 3, 4, 5] });
         crapsGame.send('ROLL_DICE');
         const step4 = crapsGame.send('DICE_ROLLED');
+        const outcome = values(step4.value)[0];
         const diceTotal = get(step4, 'context.diceTotal');
         const shooterId = get(step4, 'context.shooterId');
-        // console.log('step4.value=', step4.value);
-        const rollHistory = { diceTotal, shooterId, outcome: step4.value };
+        const wlpd = winLossPassDontPass(outcome);
+        const rollHistory = { diceTotal, shooterId, outcome, wlpd };
         diceRollHistory.push(rollHistory);
         crapsGame.send('RECONCILE_BETS');
     }
