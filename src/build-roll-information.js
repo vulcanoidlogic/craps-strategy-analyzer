@@ -4,7 +4,6 @@ import map from 'lodash/map';
 import flow from 'lodash/flow';
 import { MersenneTwister19937 } from 'random-js';
 import { die } from 'random-js';
-import { isElement } from './library';
 import { POINT_VALUES, FIELD_VALUES, HORN_VALUES, CRAPS_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
 
 const buildRollItem = (die1, die2) => {
@@ -15,14 +14,14 @@ const buildRollItem = (die1, die2) => {
     const rollInfo = {
         total,
         isHardWay,
-        isPoint: isElement(POINT_VALUES, total),
-        isNoField: !isElement(FIELD_VALUES, total),
-        isField: isElement(FIELD_VALUES, total),
-        isHorn: isElement(HORN_VALUES, total),
-        isCraps: isElement(CRAPS_VALUES, total),
+        isPoint: POINT_VALUES.includes(total),
+        isNoField: !FIELD_VALUES.includes(total),
+        isField: FIELD_VALUES.includes(total),
+        isHorn: HORN_VALUES.includes(total),
+        isCraps: CRAPS_VALUES.includes(total),
         is7,
         die1,
-        die2
+        die2,
     };
     return rollInfo;
 };
@@ -67,7 +66,7 @@ const applyOutcomes = (diceRolls = []) => {
         isPointEstablished: false,
         pointValue: null,
         isSevenOut: true,
-        hornStreakCnt: 0
+        hornStreakCnt: 0,
     };
     let shooterRollCnt = 0;
     let shooterAfterNewPointRollCnt = 0;
@@ -115,10 +114,10 @@ const applyOutcomes = (diceRolls = []) => {
             shooterAfterNewPointRollCnt = 0;
             isPointEstablished = false;
         }
-        if (!isPointEstablished && isElement(POINT_VALUES, total)) {
+        if (!isPointEstablished && POINT_VALUES.includes(total)) {
             isPointEstablished = true;
             pointValue = total;
-        } else if (isPointEstablished && isElement(POINT_VALUES, total)) {
+        } else if (isPointEstablished && POINT_VALUES.includes(total)) {
             shooterAfterNewPointRollCnt++;
             if (total === pointValue) {
                 isWin = true;
@@ -143,7 +142,7 @@ const applyOutcomes = (diceRolls = []) => {
                 }
                 loseStreakCnt = 0;
             }
-        } else if (!isPointEstablished && isElement(PASS_LINE_LOSE_VALUES, total)) {
+        } else if (!isPointEstablished && PASS_LINE_LOSE_VALUES.includes(total)) {
             isWin = false;
             isLose = true;
             outcomeCode = 'L';
@@ -158,7 +157,7 @@ const applyOutcomes = (diceRolls = []) => {
                 }
             }
             winStreakCnt = 0;
-        } else if (!isPointEstablished && isElement(PASS_LINE_WIN_VALUES, total)) {
+        } else if (!isPointEstablished && PASS_LINE_WIN_VALUES.includes(total)) {
             isWin = true;
             isLose = false;
             outcomeCode = 'W';
@@ -193,13 +192,13 @@ const applyOutcomes = (diceRolls = []) => {
                 }
             }
             winStreakCnt = 0;
-        } else if (isPointEstablished && isElement(HORN_VALUES, total)) {
+        } else if (isPointEstablished && HORN_VALUES.includes(total)) {
             shooterAfterNewPointRollCnt++;
         }
-        if (isElement(HORN_VALUES, total) && isElement(HORN_VALUES, previousTotal)) {
+        if (HORN_VALUES.includes(total) && HORN_VALUES.includes(previousTotal)) {
             hornStreakCnt++;
         } else {
-            if (isElement(HORN_VALUES, total)) {
+            if (HORN_VALUES.includes(total)) {
                 hornStreakCnt = 1;
             } else {
                 hornStreakCnt = 0;
@@ -271,7 +270,7 @@ const applyOutcomes = (diceRolls = []) => {
             noHardWayStreakCnt,
             sevenStreakCnt,
             loseStreakCnt,
-            winStreakCnt
+            winStreakCnt,
         };
         const outcome = assign({}, diceRoll, outcomeItem);
         previousOutcome = outcome;
