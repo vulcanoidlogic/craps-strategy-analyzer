@@ -35,10 +35,12 @@ const isPointContinueRoll = (context, event) => {
     return diceTotal !== 7 && diceTotal !== pointNumber;
 };
 const isNewShooter = (context, event) => {
+    console.log('isNewShooter context=', context);
     const rollOutcome = context.rollOutcome;
     return rollOutcome === 'DONT_PASS';
 };
 const isSameShooter = (context, event) => {
+    console.log('isSameShooter context=', context);
     const rollOutcome = context.rollOutcome;
     return rollOutcome !== 'DONT_PASS';
 };
@@ -231,7 +233,7 @@ export const crapsMachine = Machine(
                 return true;
             },
             makeBets: assign({ bets: (_, event) => event.bets }),
-            setShooterId: assign({ shooterId: `shooter-${uniqueId()}` }),
+            setShooterId: assign({ shooterId: () => `shooter-${uniqueId()}` }),
         },
     }
 );

@@ -28,7 +28,9 @@ for (let i = 0; i < MAX_ROLL_CNT + 15; i++) {
         const diceTotal = get(step4, 'context.diceTotal');
         const shooterId = get(step4, 'context.shooterId');
         const wlpd = winLossPassDontPass(outcome);
-        const rollHistory = { diceTotal, shooterId, outcome, wlpd };
+        const rollCnt = get(step4, 'context.rollCnt');
+        // const rollOutcome = get(step4, 'context.rollOutcome');
+        const rollHistory = { diceTotal, shooterId, outcome, wlpd, rollCnt };
         diceRollHistory.push(rollHistory);
         crapsGame.send('RECONCILE_BETS');
     }
