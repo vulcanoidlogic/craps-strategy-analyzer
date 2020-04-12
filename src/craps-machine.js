@@ -1,12 +1,19 @@
 import { Machine, assign } from 'xstate';
 import { MAX_ROLL_CNT } from './constants';
 import { uniqueId } from 'lodash';
+import { POINT_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
 
+const MOCK = true;
+const mockDiceTotals = [5, 7, 8, 6, 7, 6, 4, 6, 6, 7, 7, 11, 7, 6, 10, 9, 7];
 // Stateless machine definition
-const getDiceTotal = () => {
-    const dice1 = Math.floor(Math.random() * 6) + 1;
-    const dice2 = Math.floor(Math.random() * 6) + 1;
-    return dice1 + dice2;
+const getDiceTotal = (context) => {
+    if (MOCK) {
+        return mockDiceTotals[context.rollCnt];
+    } else {
+        const dice1 = Math.floor(Math.random() * 6) + 1;
+        const dice2 = Math.floor(Math.random() * 6) + 1;
+        return dice1 + dice2;
+    }
 };
 const isPointOff = (context, event) => {
     return context.pointNumber === null;
@@ -96,13 +103,13 @@ export const crapsMachine = Machine(
                             DICE_ROLLED: [
                                 {
                                     id: 'seven-eleven',
-                                    cond: { type: 'isDiceRollIncludes', diceValues: [7, 11] },
+                                    cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_WIN_VALUES },
                                     target: 'pass_line_win_and_dont_pass_line_lose',
                                     actions: ['handleDiceRolled'],
                                 },
                                 {
                                     id: 'two-three',
-                                    cond: { type: 'isDiceRollIncludes', diceValues: [2, 3] },
+                                    cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_LOSE_VALUES },
                                     target: 'pass_line_lose_and_dont_pass_line_win',
                                     actions: ['handleDiceRolled'],
                                 },
@@ -114,7 +121,7 @@ export const crapsMachine = Machine(
                                 },
                                 {
                                     id: 'box-number',
-                                    cond: { type: 'isDiceRollIncludes', diceValues: [4, 5, 6, 8, 9, 10] },
+                                    cond: { type: 'isDiceRollIncludes', diceValues: POINT_VALUES },
                                     target: 'point_established',
                                     actions: ['handleDiceRolled', 'setPointNumber'],
                                 },
@@ -205,7 +212,7 @@ export const crapsMachine = Machine(
                 return { rollCnt };
             }),
             setDiceTotal: assign((context, event) => {
-                const diceTotal = getDiceTotal();
+                const diceTotal = getDiceTotal(context);
                 return {
                     diceTotal,
                 };
