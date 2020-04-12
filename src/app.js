@@ -32,6 +32,14 @@ const isPointContinueRoll = (context, event) => {
     const { diceTotal, pointNumber } = context;
     return diceTotal !== 7 && diceTotal !== pointNumber;
 };
+const isNewShooter = (context, event) => {
+    const rollOutcome = context.rollOutcome;
+    return rollOutcome === 'DONT_PASS';
+};
+const isSameShooter = (context, event) => {
+    const rollOutcome = context.rollOutcome;
+    return rollOutcome !== 'DONT_PASS';
+};
 const crapsMachine = Machine(
     {
         id: 'craps',
@@ -41,7 +49,7 @@ const crapsMachine = Machine(
             pointNumber: null,
             bets: [],
             rollCnt: 0,
-            rollOutcome: 'INDETERMINATE',
+            rollOutcome: null,
             shooterId: `shooter-${uniqueId()}`,
         },
         states: {
@@ -64,8 +72,14 @@ const crapsMachine = Machine(
                         on: {
                             MAKE_BETS: [
                                 {
+                                    cond: isNewShooter,
                                     target: 'ready_to_roll',
                                     actions: ['makeBets', 'setShooterId'],
+                                },
+                                {
+                                    cond: isSameShooter,
+                                    target: 'ready_to_roll',
+                                    actions: ['makeBets'],
                                 },
                             ],
                             LEAVE_GAME: [{ cond: isMaxRollCntReached, target: 'end' }],
@@ -217,17 +231,7 @@ const crapsMachine = Machine(
             makeBets: assign({
                 bets: (_, event) => event.bets,
             }),
-            setShooterId: assign((context, event, actionMeta) => {
-                console.log('in setShooterId', actionMeta.state.history);
-                const rollOutcome = context.rollOutcome;
-                let shooterId = context.shooterId;
-                if (rollOutcome === 'DONT_PASS') {
-                    shooterId = `shooter-${uniqueId()}`;
-                }
-                return {
-                    shooterId,
-                };
-            }),
+            setShooterId: assign({ shooterId: `shooter-${uniqueId()}` }),
         },
     }
 );
@@ -235,8 +239,7 @@ const crapsGame = interpret(crapsMachine)
     // .onTransition((state) => console.log(state.value))
     .start();
 
-const step1 = crapsGame.send('JOIN_GAME');
-console.log('crapsGame step1.nextEvents=', step1.nextEvents);
+crapsGame.send('JOIN_GAME');
 
 const diceRollHistory = [];
 for (let i = 0; i < MAX_ROLL_CNT + 15; i++) {
@@ -258,42 +261,3 @@ for (let i = 0; i < MAX_ROLL_CNT + 15; i++) {
 }
 
 console.log('Reached end of game diceRollHistory=', diceRollHistory);
-
-// const toggleMachine = Machine({
-//     id: 'toggle',
-//     initial: 'active',
-//     states: {
-//         indeterminate: { on: { TOGGLE: 'active' } },
-//         active: { on: { TOGGLE: 'inactive' } },
-//         inactive: { on: { TOGGLE: 'indeterminate' } },
-//     },
-// });
-
-// // Machine instance with internal state
-// const toggleService = interpret(toggleMachine)
-//     .onTransition((state) => console.log(state.value))
-//     .start();
-// // => 'active'
-
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-// toggleService.send('TOGGLE');
-
-/**
- * Game States: no_point, point
- * Game Outcome: no_point: pass_line_win, pass_line_lose, point: pass, dont_pass
- * Event: dice_roll
- * Dice Roll States: start_roll, end_roll
- * Dice Roll Data: total, info from dice roll information
- * Player Actions: make bets
- * Player Bank Actions:  decrement, increment
- * Table Bets: each bet may have a monetary amount ranging from 0 - max bet.  Each bet has payout odds.  Some bets have a vig.
- *
- *
- * Note: rxjs = events over time.
- */
