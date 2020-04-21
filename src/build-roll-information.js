@@ -30,7 +30,7 @@ const getDieRoll = (randomEngine, sideCnt = 6) => {
     return die(sideCnt)(randomEngine);
 };
 
-const generateDiceRolls = (rollCnt = 216, seed = new Date().getTime()) => {
+const generateDiceRolls = (rollCnt, seed) => {
     const randomEngine = MersenneTwister19937.seed(seed);
     const diceRolls = map(new Array(rollCnt), () => {
         const die1 = getDieRoll(randomEngine);
@@ -279,7 +279,7 @@ const applyOutcomes = (diceRolls = []) => {
     return outcomes;
 };
 
-export const getDiceRolls = () => {
-    const diceRolls = flow(generateDiceRolls, applyOutcomes)(100, 1024);
+export const getDiceRolls = (rollCnt = 100, seed = 1024) => {
+    const diceRolls = flow(generateDiceRolls, applyOutcomes)(rollCnt, seed);
     return diceRolls;
 };

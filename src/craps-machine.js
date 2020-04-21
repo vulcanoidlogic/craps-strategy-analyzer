@@ -1,7 +1,6 @@
 import { Machine, assign } from 'xstate';
-import { MAX_ROLL_CNT } from './constants';
 import { uniqueId, assign as _assign, get } from 'lodash';
-import { POINT_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
+import { POINT_VALUES, NON_POINT_VALUES } from './constants';
 import { reconcileBets, makeBets } from './bets-manager';
 
 // const MOCK = true;
@@ -20,9 +19,10 @@ const getDiceTotal = (context, event) => {
 const isPointOff = (context, event) => {
     return context.pointNumber === null;
 };
-const isMaxRollCntReached = (context, event) => {
-    return context.rollCnt >= MAX_ROLL_CNT;
-};
+// const isMaxRollCntReached = (context, event) => {
+//     const preLoadedDiceRolls = get(context, 'preLoadedDiceRolls');
+//     return context.rollCnt >= preLoadedDiceRolls.length;
+// };
 const isDiceRollIncludes = (context, event, stateGuard) => {
     const { diceTotal } = context;
     const { diceValues = [] } = stateGuard.cond;
@@ -74,13 +74,13 @@ export const createCrapsMachine = (additionalContext) => {
                         },
                     },
                 },
+                end: {
+                    entry: () => console.log('Beginning of the end'),
+                    type: 'final',
+                },
                 point_off: {
                     initial: 'accept_bets',
                     states: {
-                        end: {
-                            entry: () => console.log('Beginning of the end'),
-                            type: 'final',
-                        },
                         accept_bets: {
                             on: {
                                 MAKE_BETS: [
@@ -95,7 +95,8 @@ export const createCrapsMachine = (additionalContext) => {
                                         actions: ['makeBets'],
                                     },
                                 ],
-                                LEAVE_GAME: [{ cond: isMaxRollCntReached, target: 'end' }],
+                                // LEAVE_GAME: [{ cond: isMaxRollCntReached, target: 'end' }],
+                                LEAVE_GAME: [{ target: '#craps.end' }],
                             },
                         },
                         ready_to_roll: {
@@ -113,45 +114,45 @@ export const createCrapsMachine = (additionalContext) => {
                             on: {
                                 DICE_ROLLED: [
                                     {
-                                        id: 'seven-eleven',
-                                        cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_WIN_VALUES },
-                                        target: 'pass_line_win_and_dont_pass_line_lose',
-                                        actions: ['handleDiceRolled'],
+                                        id: 'no-box-number',
+                                        cond: { type: 'isDiceRollIncludes', diceValues: NON_POINT_VALUES },
+                                        target: '#craps.point_off.accept_bets',
+                                        actions: ['reconcileBetsPointOff', 'handleDiceRolled'],
                                     },
-                                    {
-                                        id: 'two-three',
-                                        cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_LOSE_VALUES },
-                                        target: 'pass_line_lose_and_dont_pass_line_win',
-                                        actions: ['handleDiceRolled'],
-                                    },
-                                    {
-                                        id: 'twelve',
-                                        cond: { type: 'isDiceRollIncludes', diceValues: [12] },
-                                        target: 'pass_line_lose_and_dont_pass_line_push',
-                                        actions: ['handleDiceRolled'],
-                                    },
+                                    // {
+                                    //     id: 'two-three',
+                                    //     cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_LOSE_VALUES },
+                                    //     target: 'pass_line_lose_and_dont_pass_line_win',
+                                    //     actions: ['handleDiceRolled'],
+                                    // },
+                                    // {
+                                    //     id: 'twelve',
+                                    //     cond: { type: 'isDiceRollIncludes', diceValues: [12] },
+                                    //     target: 'pass_line_lose_and_dont_pass_line_push',
+                                    //     actions: ['handleDiceRolled'],
+                                    // },
                                     {
                                         id: 'box-number',
                                         cond: { type: 'isDiceRollIncludes', diceValues: POINT_VALUES },
-                                        target: 'point_established',
-                                        actions: ['handleDiceRolled', 'setPointNumber'],
+                                        target: '#craps.point_on.accept_bets',
+                                        actions: ['reconcileBetsNewPoint', 'handleDiceRolled', 'setPointNumber'],
                                     },
                                 ],
                             },
                             // exit: (context, state) => console.log('exit point_off dice rolled, context=', context),
                         },
-                        pass_line_win_and_dont_pass_line_lose: {
-                            on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
-                        },
-                        pass_line_lose_and_dont_pass_line_push: {
-                            on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
-                        },
-                        pass_line_lose_and_dont_pass_line_win: {
-                            on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
-                        },
-                        point_established: {
-                            on: { RECONCILE_BETS: { target: '#craps.point_on.accept_bets', actions: ['reconcileBetsNewPoint'] } },
-                        },
+                        // pass_line_win_and_dont_pass_line_lose: {
+                        //     on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
+                        // },
+                        // pass_line_lose_and_dont_pass_line_push: {
+                        //     on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
+                        // },
+                        // pass_line_lose_and_dont_pass_line_win: {
+                        //     on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
+                        // },
+                        // point_established: {
+                        //     on: { RECONCILE_BETS: { target: '#craps.point_on.accept_bets', actions: ['reconcileBetsNewPoint'] } },
+                        // },
                     },
                 },
                 point_on: {
@@ -165,6 +166,7 @@ export const createCrapsMachine = (additionalContext) => {
                                         actions: ['makeBets'],
                                     },
                                 ],
+                                LEAVE_GAME: [{ target: '#craps.end' }],
                             },
                         },
                         ready_to_roll: {

@@ -38,7 +38,7 @@ export const reconcileBets = (testReconcileType, context) => {
                 bankRoll += winAmount;
             }
         }
-        // Assume decrement from bankRoll when place bet.  A loss just means we don't receive money back.  If bet did not lose, return amount to bank.
+        // Assume decrement from bankRoll when makeBets.  A loss just means we don't receive money back.  Only return amount to bank if did not lose.
         const lose = get(bet, 'betDefinitions.lose');
         if (isOn) {
             if (!lose({ diceTotal })) {
