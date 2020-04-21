@@ -9,11 +9,13 @@ import { betDefinitions } from './bets-manager';
 const diceRolls = getDiceRolls();
 // console.log(diceRolls);
 
+const preLoadedDiceRolls = [5, 7, 8, 6, 7, 6, 4, 6, 6, 7, 7, 11, 7, 6, 10, 9, 7];
+
 const crapsGame = interpret(createCrapsMachine())
     // .onTransition((state) => console.log(state.value))
     .start();
 
-crapsGame.send({ type: 'JOIN_GAME', bankRoll: 1000 });
+crapsGame.send({ type: 'JOIN_GAME', bankRoll: 1000, preLoadedDiceRolls });
 
 const testBets = {
     place6: { amount: 36, betDefinitions: betDefinitions.place6, isOn: true },

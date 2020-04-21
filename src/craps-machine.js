@@ -1,15 +1,16 @@
 import { Machine, assign } from 'xstate';
 import { MAX_ROLL_CNT } from './constants';
-import { uniqueId, assign as _assign } from 'lodash';
+import { uniqueId, assign as _assign, get } from 'lodash';
 import { POINT_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
 import { reconcileBets, makeBets } from './bets-manager';
 
-const MOCK = true;
-const mockDiceTotals = [5, 7, 8, 6, 7, 6, 4, 6, 6, 7, 7, 11, 7, 6, 10, 9, 7];
+// const MOCK = true;
 // Stateless machine definition
-const getDiceTotal = (context) => {
-    if (MOCK) {
-        return mockDiceTotals[context.rollCnt];
+const getDiceTotal = (context, event) => {
+    const preLoadedDiceRolls = get(context, 'preLoadedDiceRolls');
+    console.log('getDiceTotal preLoadedDiceRolls=', preLoadedDiceRolls);
+    if (preLoadedDiceRolls) {
+        return preLoadedDiceRolls[context.rollCnt];
     } else {
         const dice1 = Math.floor(Math.random() * 6) + 1;
         const dice2 = Math.floor(Math.random() * 6) + 1;
@@ -217,13 +218,17 @@ export const createCrapsMachine = (additionalContext) => {
                 isDiceRollIncludes,
             },
             actions: {
-                joinedGame: assign({ bankRoll: (_, event) => event.bankRoll }),
+                joinedGame: assign((context, event, actionMeta) => {
+                    const bankRoll = get(event, 'bankRoll');
+                    const preLoadedDiceRolls = get(event, 'preLoadedDiceRolls');
+                    return { bankRoll, preLoadedDiceRolls };
+                }),
                 handleDiceRolled: assign((context, event, actionMeta) => {
                     const rollCnt = context.rollCnt + 1;
                     return { rollCnt };
                 }),
                 setDiceTotal: assign((context, event) => {
-                    const diceTotal = getDiceTotal(context);
+                    const diceTotal = getDiceTotal(context, event);
                     return {
                         diceTotal,
                     };
