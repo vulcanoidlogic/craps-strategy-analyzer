@@ -18,15 +18,15 @@ export const reconcileBets = (testReconcileType, context) => {
     const bets = context.bets;
     let bankRoll = context.bankRoll;
 
-    console.log('bets=', bets);
+    // console.log('bets=', bets);
     forEach(bets, (bet, betIdx) => {
-        console.log(
-            `${testReconcileType} diceTotal, bankRoll, win, lose=`,
-            diceTotal,
-            bankRoll,
-            bet.betDefinitions.win({ isOn: bet.isOn, diceTotal }),
-            bet.betDefinitions.lose({ isOn: bet.isOn, diceTotal })
-        );
+        // console.log(
+        //     `${testReconcileType} diceTotal, bankRoll, win, lose=`,
+        //     diceTotal,
+        //     bankRoll,
+        //     bet.betDefinitions.win({ isOn: bet.isOn, diceTotal }),
+        //     bet.betDefinitions.lose({ isOn: bet.isOn, diceTotal })
+        // );
         const win = get(bet, 'betDefinitions.win');
         const isOn = get(bet, 'isOn');
         if (isOn) {
@@ -56,7 +56,7 @@ export const makeBets = (context, event) => {
     let bankRoll = context.bankRoll;
 
     forEach(bets, (bet, betIdx) => {
-        console.log(`makeBets diceTotal, bankRoll=`, diceTotal, bankRoll);
+        // console.log(`makeBets diceTotal, bankRoll=`, diceTotal, bankRoll);
         const isOn = get(bet, 'isOn');
         if (isOn) {
             const amount = get(bet, 'amount');

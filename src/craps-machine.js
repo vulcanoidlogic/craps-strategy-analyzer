@@ -7,7 +7,6 @@ import { reconcileBets, makeBets } from './bets-manager';
 // Stateless machine definition
 const getDiceTotal = (context, event) => {
     const preLoadedDiceRolls = get(context, 'preLoadedDiceRolls');
-    console.log('getDiceTotal preLoadedDiceRolls=', preLoadedDiceRolls);
     if (preLoadedDiceRolls) {
         return preLoadedDiceRolls[context.rollCnt];
     } else {

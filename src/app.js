@@ -10,7 +10,10 @@ import { betDefinitions } from './bets-manager';
 
 // const preLoadedDiceRolls = [5, 7, 8, 6, 7, 6, 4, 6, 6, 7, 7, 11, 7, 6, 10, 9, 7];
 const preLoadedDiceRolls = getDiceRolls(20, 1024).map(({ total }) => total);
-console.log('preLoadedDiceRolls.length=', preLoadedDiceRolls.length);
+// const preLoadedDiceRolls = getDiceRolls(30, 1024).map(({ total }) => total);
+// const preLoadedDiceRolls = getDiceRolls(300, 1024).map(({ total }) => total);
+// console.log('preLoadedDiceRolls.length=', preLoadedDiceRolls.length);
+console.log('getDiceTotal preLoadedDiceRolls=', preLoadedDiceRolls);
 
 const crapsGame = interpret(createCrapsMachine())
     // .onTransition((state) => console.log(state.value))
@@ -23,8 +26,8 @@ const testBets = {
     place8: { amount: 36, betDefinitions: betDefinitions.place8, isOn: true },
 };
 
-const diceRollHistory = [];
-for (let i = 0; i < preLoadedDiceRolls.length; i++) {
+const diceRollHistory = preLoadedDiceRolls.reduce((diceRolls, _curr) => {
+    // console.log('diceRolls=', diceRolls);
     crapsGame.send({ type: 'MAKE_BETS', bets: testBets });
     crapsGame.send('ROLL_DICE');
     const step4 = crapsGame.send('DICE_ROLLED');
@@ -37,8 +40,9 @@ for (let i = 0; i < preLoadedDiceRolls.length; i++) {
     const bets = get(step5, 'context.bets');
     const bankRoll = get(step5, 'context.bankRoll');
     const rollHistory = { diceTotal, shooterId, outcomeTarget, wlpd, rollCnt, bets, bankRoll };
-    diceRollHistory.push(rollHistory);
-}
+    return diceRolls.concat(rollHistory);
+}, []);
+
 crapsGame.send('LEAVE_GAME');
 
 console.log('Reached end of game diceRollHistory=', diceRollHistory);
