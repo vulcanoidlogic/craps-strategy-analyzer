@@ -1,6 +1,5 @@
 // win, loss, pass, dont-pass
-export const winLossPassDontPass = (wlpd, step4) => {
-    console.log('winLossPassDontPass wlpd=', wlpd, step4);
+export const winLossPassDontPass = (wlpd) => {
     const lookup = {
         point_off_win: 'W',
         point_off_lose: 'L',

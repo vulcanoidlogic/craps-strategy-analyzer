@@ -1,4 +1,5 @@
 import { forEach, get } from 'lodash';
+import { FIELD_VALUES, NON_FIELD_VALUES } from './constants';
 
 const isSeven = ({ diceTotal = 0 }) => {
     return diceTotal === 7;
@@ -11,6 +12,7 @@ const rollIncludes = (diceTotalList = [], { diceTotal = 0 }) => {
 export const betDefinitions = {
     place6: { payout: 7 / 6, win: rollIncludes.bind(null, [6]), lose: isSeven, canToggleOnOff: true },
     place8: { payout: 7 / 6, win: rollIncludes.bind(null, [8]), lose: isSeven, canToggleOnOff: true },
+    field: { payout: 1, win: rollIncludes.bind(null, FIELD_VALUES), lose: rollIncludes.bind(null, NON_FIELD_VALUES), canToggleOnOff: false },
 };
 
 export const reconcileBets = (testReconcileType, context) => {
@@ -31,6 +33,7 @@ export const reconcileBets = (testReconcileType, context) => {
         const isOn = get(bet, 'isOn');
         if (isOn) {
             if (win({ diceTotal })) {
+                console.log('win diceTotal, bet=', diceTotal, bet);
                 const payout = get(bet, 'betDefinitions.payout');
                 const amount = get(bet, 'amount');
                 // At first, return amount and force betting again
@@ -44,6 +47,9 @@ export const reconcileBets = (testReconcileType, context) => {
             if (!lose({ diceTotal })) {
                 const amount = get(bet, 'amount');
                 bankRoll += amount;
+            } else {
+                //Lose
+                console.log('lose diceTotal, bet=', diceTotal, bet);
             }
         }
     });
