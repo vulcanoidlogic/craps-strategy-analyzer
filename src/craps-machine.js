@@ -1,6 +1,6 @@
 import { Machine, assign } from 'xstate';
 import { uniqueId, assign as _assign, get } from 'lodash';
-import { POINT_VALUES, NON_POINT_VALUES } from './constants';
+import { POINT_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
 import { reconcileBets, makeBets } from './bets-manager';
 
 // const MOCK = true;
@@ -74,7 +74,7 @@ export const createCrapsMachine = (additionalContext) => {
                     },
                 },
                 end: {
-                    entry: () => console.log('Beginning of the end'),
+                    entry: () => console.log('END STATE ENTRY'),
                     type: 'final',
                 },
                 point_off: {
@@ -112,18 +112,24 @@ export const createCrapsMachine = (additionalContext) => {
                             // entry: () => console.log('entry point_off dice rolled'),
                             on: {
                                 DICE_ROLLED: [
-                                    {
-                                        id: 'no-box-number',
-                                        cond: { type: 'isDiceRollIncludes', diceValues: NON_POINT_VALUES },
-                                        target: '#craps.point_off.accept_bets',
-                                        actions: ['reconcileBetsPointOff', 'handleDiceRolled'],
-                                    },
                                     // {
-                                    //     id: 'two-three',
-                                    //     cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_LOSE_VALUES },
-                                    //     target: 'pass_line_lose_and_dont_pass_line_win',
-                                    //     actions: ['handleDiceRolled'],
+                                    //     id: 'no-box-number',
+                                    //     cond: { type: 'isDiceRollIncludes', diceValues: NON_POINT_VALUES },
+                                    //     target: '#craps.point_off.accept_bets',
+                                    //     actions: ['reconcileBetsPointOff', 'handleDiceRolled'],
                                     // },
+                                    {
+                                        id: 'pass-line-win',
+                                        cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_WIN_VALUES },
+                                        target: 'point_off_win',
+                                        actions: ['handleDiceRolled'],
+                                    },
+                                    {
+                                        id: 'pass-line-lose',
+                                        cond: { type: 'isDiceRollIncludes', diceValues: PASS_LINE_LOSE_VALUES },
+                                        target: 'point_off_lose',
+                                        actions: ['handleDiceRolled'],
+                                    },
                                     // {
                                     //     id: 'twelve',
                                     //     cond: { type: 'isDiceRollIncludes', diceValues: [12] },
@@ -140,6 +146,14 @@ export const createCrapsMachine = (additionalContext) => {
                             },
                             // exit: (context, state) => console.log('exit point_off dice rolled, context=', context),
                         },
+                        //Targets are used to determine wlpd
+                        point_off_win: {
+                            on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
+                        },
+                        point_off_lose: {
+                            on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
+                        },
+
                         // pass_line_win_and_dont_pass_line_lose: {
                         //     on: { RECONCILE_BETS: { target: '#craps.point_off.accept_bets', actions: ['reconcileBetsPointOff'] } },
                         // },
