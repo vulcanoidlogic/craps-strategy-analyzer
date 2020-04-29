@@ -33,7 +33,7 @@ export const reconcileBets = (testReconcileType, context) => {
         const isOn = get(bet, 'isOn');
         if (isOn) {
             if (win({ diceTotal })) {
-                console.log('win diceTotal, bet=', diceTotal, bet);
+                // console.log('win diceTotal, bet=', diceTotal, bet);
                 const payout = get(bet, 'betDefinitions.payout');
                 const amount = get(bet, 'amount');
                 // At first, return amount and force betting again
@@ -49,7 +49,7 @@ export const reconcileBets = (testReconcileType, context) => {
                 bankRoll += amount;
             } else {
                 //Lose
-                console.log('lose diceTotal, bet=', diceTotal, bet);
+                // console.log('lose diceTotal, bet=', diceTotal, bet);
             }
         }
     });

@@ -57,6 +57,7 @@ const applyOutcomes = (diceRolls = []) => {
     let noFieldStreakCnt = 0;
     let noHardWayStreakCnt = 0;
     let sevenStreakCnt = 0;
+    let noSevenStreakCnt = 0;
     let winStreakCnt = 0;
     let loseStreakCnt = 0;
     let previousOutcome = {
@@ -241,6 +242,11 @@ const applyOutcomes = (diceRolls = []) => {
             winStreakCnt = 0;
             loseStreakCnt = 0;
         }
+        if (is7) {
+            noSevenStreakCnt = 0;
+        } else {
+            noSevenStreakCnt++;
+        }
 
         shooterRollCnt++;
         const outcomeItem = {
@@ -271,6 +277,7 @@ const applyOutcomes = (diceRolls = []) => {
             sevenStreakCnt,
             loseStreakCnt,
             winStreakCnt,
+            noSevenStreakCnt,
         };
         const outcome = assign({}, diceRoll, outcomeItem);
         previousOutcome = outcome;
