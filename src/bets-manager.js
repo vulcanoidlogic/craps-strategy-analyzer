@@ -49,7 +49,7 @@ export const reconcileBets = (testReconcileType, context) => {
 };
 
 export const applyBets = (context, event) => {
-    const diceTotal = context.diceTotal;
+    // const diceTotal = context.diceTotal;
     const bets = event.bets;
     let bankRoll = context.bankRoll;
 
@@ -69,10 +69,14 @@ export const applyBets = (context, event) => {
 // };
 
 export const makeBets = (diceRolls, diceRollInfo) => {
+    return makeBetsField(diceRolls, diceRollInfo);
+    // return testBets;
+};
+
+export const makeBetsField = (diceRolls, diceRollInfo) => {
     const previousRoll = last(diceRolls);
     if (previousRoll) {
-        const { noFieldStreakCnt, bets } = previousRoll;
-        console.log('previousRoll bets=', bets);
+        const { noFieldStreakCnt } = previousRoll;
         const fieldStreakMinumum = 3;
         const baseFieldBetAmount = 25;
         if (noFieldStreakCnt >= fieldStreakMinumum) {
@@ -82,5 +86,4 @@ export const makeBets = (diceRolls, diceRollInfo) => {
             return null;
         }
     }
-    // return testBets;
 };
