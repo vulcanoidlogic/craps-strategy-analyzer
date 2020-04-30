@@ -1,7 +1,7 @@
 import { Machine, assign } from 'xstate';
 import { uniqueId, assign as _assign, get } from 'lodash';
 import { POINT_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
-import { reconcileBets, makeBets } from './bets-manager';
+import { reconcileBets, applyBets } from './bets-manager';
 
 // const MOCK = true;
 // Stateless machine definition
@@ -275,7 +275,7 @@ export const createCrapsMachine = (additionalContext) => {
                     return { rollOutcome: 'INDETERMINATE', bankRoll };
                 }),
                 makeBets: assign((context, event, actionMeta) => {
-                    const bankRoll = makeBets(context, event);
+                    const bankRoll = applyBets(context, event);
                     // console.log('makeBets context, event=', context, event);
                     return { bets: event.bets, bankRoll };
                 }),

@@ -1,4 +1,4 @@
-import { forEach, get } from 'lodash';
+import { forEach, get, last } from 'lodash';
 import { FIELD_VALUES, NON_FIELD_VALUES } from './constants';
 
 const isSeven = ({ diceTotal = 0 }) => {
@@ -20,24 +20,17 @@ export const reconcileBets = (testReconcileType, context) => {
     const bets = context.bets;
     let bankRoll = context.bankRoll;
 
-    // console.log('bets=', bets);
     forEach(bets, (bet, betIdx) => {
-        // console.log(
-        //     `${testReconcileType} diceTotal, bankRoll, win, lose=`,
-        //     diceTotal,
-        //     bankRoll,
-        //     bet.betDefinitions.win({ isOn: bet.isOn, diceTotal }),
-        //     bet.betDefinitions.lose({ isOn: bet.isOn, diceTotal })
-        // );
+        bet.betOutcome = 'NEUTRAL';
         const win = get(bet, 'betDefinitions.win');
         const isOn = get(bet, 'isOn');
         if (isOn) {
             if (win({ diceTotal })) {
-                // console.log('win diceTotal, bet=', diceTotal, bet);
                 const payout = get(bet, 'betDefinitions.payout');
                 const amount = get(bet, 'amount');
                 // At first, return amount and force betting again
                 const winAmount = payout * amount;
+                bet.betOutcome = 'W';
                 bankRoll += winAmount;
             }
         }
@@ -48,21 +41,19 @@ export const reconcileBets = (testReconcileType, context) => {
                 const amount = get(bet, 'amount');
                 bankRoll += amount;
             } else {
-                //Lose
-                // console.log('lose diceTotal, bet=', diceTotal, bet);
+                bet.betOutcome = 'L';
             }
         }
     });
     return bankRoll;
 };
 
-export const makeBets = (context, event) => {
+export const applyBets = (context, event) => {
     const diceTotal = context.diceTotal;
     const bets = event.bets;
     let bankRoll = context.bankRoll;
 
     forEach(bets, (bet, betIdx) => {
-        // console.log(`makeBets diceTotal, bankRoll=`, diceTotal, bankRoll);
         const isOn = get(bet, 'isOn');
         if (isOn) {
             const amount = get(bet, 'amount');
@@ -70,4 +61,26 @@ export const makeBets = (context, event) => {
         }
     });
     return bankRoll;
+};
+
+// const testBets = {
+//     place6: { amount: 36, betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
+//     place8: { amount: 36, betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
+// };
+
+export const makeBets = (diceRolls, diceRollInfo) => {
+    const previousRoll = last(diceRolls);
+    if (previousRoll) {
+        const { noFieldStreakCnt, bets } = previousRoll;
+        console.log('previousRoll bets=', bets);
+        const fieldStreakMinumum = 3;
+        const baseFieldBetAmount = 25;
+        if (noFieldStreakCnt >= fieldStreakMinumum) {
+            const amount = Math.max(baseFieldBetAmount, 2 * (noFieldStreakCnt - fieldStreakMinumum) * baseFieldBetAmount);
+            return { field: { amount, betDefinitions: betDefinitions.field, isOn: true, betOutcome: null } };
+        } else {
+            return null;
+        }
+    }
+    // return testBets;
 };
