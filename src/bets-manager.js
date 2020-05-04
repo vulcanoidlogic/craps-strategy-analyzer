@@ -1,5 +1,6 @@
-import { forEach, get, last } from 'lodash';
+import { forEach, get, last, assign } from 'lodash';
 import { FIELD_VALUES, NON_FIELD_VALUES } from './constants';
+import { roundToNext6 } from './lib';
 
 const isSeven = ({ diceTotal = 0 }) => {
     return diceTotal === 7;
@@ -10,8 +11,10 @@ const rollIncludes = (diceTotalList = [], { diceTotal = 0 }) => {
 };
 
 export const betDefinitions = {
+    place5: { payout: 7 / 5, win: rollIncludes.bind(null, [5]), lose: isSeven, canToggleOnOff: true },
     place6: { payout: 7 / 6, win: rollIncludes.bind(null, [6]), lose: isSeven, canToggleOnOff: true },
     place8: { payout: 7 / 6, win: rollIncludes.bind(null, [8]), lose: isSeven, canToggleOnOff: true },
+    place9: { payout: 7 / 5, win: rollIncludes.bind(null, [9]), lose: isSeven, canToggleOnOff: true },
     field: { payout: 1, win: rollIncludes.bind(null, FIELD_VALUES), lose: rollIncludes.bind(null, NON_FIELD_VALUES), canToggleOnOff: false },
 };
 
@@ -69,21 +72,51 @@ export const applyBets = (context, event) => {
 // };
 
 export const makeBets = (diceRolls, diceRollInfo) => {
-    return makeBetsField(diceRolls, diceRollInfo);
+    // return assign({}, makeBetsNo5689(diceRolls, diceRollInfo));
+    return assign({}, makeBetsField(diceRolls, diceRollInfo), makeBetsNo5689(diceRolls, diceRollInfo));
     // return testBets;
 };
 
 export const makeBetsField = (diceRolls, diceRollInfo) => {
     const previousRoll = last(diceRolls);
     if (previousRoll) {
-        const { noFieldStreakCnt } = previousRoll;
-        const fieldStreakMinumum = 3;
-        const baseFieldBetAmount = 25;
-        if (noFieldStreakCnt >= fieldStreakMinumum) {
-            const amount = Math.max(baseFieldBetAmount, 2 * (noFieldStreakCnt - fieldStreakMinumum) * baseFieldBetAmount);
-            return { field: { amount, betDefinitions: betDefinitions.field, isOn: true, betOutcome: null } };
+        const {
+            noFieldStreakCnt,
+            bets: { field },
+        } = previousRoll;
+        const streakMinumum = 3;
+
+        if (noFieldStreakCnt >= streakMinumum) {
+            if (field) {
+                const { amount } = field;
+                return { field: { amount: amount * 2, betDefinitions: betDefinitions.field, isOn: true, betOutcome: null } };
+            } else {
+                const baseBetAmount = 25;
+                return { field: { amount: baseBetAmount, betDefinitions: betDefinitions.field, isOn: true, betOutcome: null } };
+            }
         } else {
-            return null;
+            return {};
+        }
+    }
+};
+
+export const makeBetsNo5689 = (diceRolls, diceRollInfo) => {
+    const previousRoll = last(diceRolls);
+    if (previousRoll) {
+        const { no5689StreakCnt } = previousRoll;
+        const streakMinumum = 3;
+        const baseBetAmount = 25;
+        if (no5689StreakCnt >= streakMinumum) {
+            const amount = baseBetAmount;
+
+            return {
+                place5: { amount, betDefinitions: betDefinitions.place5, isOn: true, betOutcome: null },
+                place6: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
+                place8: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
+                place9: { amount, betDefinitions: betDefinitions.place9, isOn: true, betOutcome: null },
+            };
+        } else {
+            return {};
         }
     }
 };

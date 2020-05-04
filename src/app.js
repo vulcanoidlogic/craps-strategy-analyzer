@@ -2,13 +2,17 @@ import { interpret } from 'xstate';
 import { getDiceRolls } from './build-roll-information.js';
 import { createCrapsMachine } from './craps-machine';
 import { get, values, assign } from 'lodash';
-import { winLossPassDontPass } from './lib';
+import { winLossPassDontPass, analyze } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
 const preLoadedDiceRolls = getDiceRolls(20, 1024);
+// const preLoadedDiceRolls = getDiceRolls(50, 1024);
 // const preLoadedDiceRolls = getDiceRolls(1000, 1024);
-// const preLoadedDiceRolls = getDiceRolls(30, 1024);
+// const preLoadedDiceRolls = getDiceRolls(3000, 384328578983);
+// const preLoadedDiceRolls = getDiceRolls(3000, 934348438);
+// const preLoadedDiceRolls = getDiceRolls(3000, 2343243);
+// const preLoadedDiceRolls = getDiceRolls(3000, 325532);
 // const preLoadedDiceRolls = getDiceRolls(10000, 1024);
 
 const crapsGame = interpret(createCrapsMachine())
@@ -25,7 +29,7 @@ preLoadedDiceRolls.forEach(({ total }, index) => {
 outfile.write(']\n\n');
 
 outfile.write('[');
-preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
+const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     crapsGame.send({ type: 'MAKE_BETS', bets: makeBets(diceRolls, currentDiceRollInfo) });
     crapsGame.send('ROLL_DICE');
     const diceRolled = crapsGame.send('DICE_ROLLED');
@@ -39,11 +43,13 @@ preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     const bankRoll = get(reconcileBets, 'context.bankRoll');
     const rollHistory = assign(currentDiceRollInfo, { diceTotal, shooterId, outcomeTarget: outcomeXStateTarget, wlpd, rollCnt, bets, bankRoll });
     outfile.write(`${JSON.stringify(rollHistory)},\n`);
-    return diceRolls.concat(currentDiceRollInfo);
+    return diceRolls.concat(rollHistory);
 }, []);
 outfile.write(']\n');
 
 crapsGame.send('LEAVE_GAME');
-
 outfile.end();
+
+const analysis = analyze(results);
+
 console.log('END');

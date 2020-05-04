@@ -4,7 +4,7 @@ import map from 'lodash/map';
 import flow from 'lodash/flow';
 import { MersenneTwister19937 } from 'random-js';
 import { die } from 'random-js';
-import { POINT_VALUES, FIELD_VALUES, HORN_VALUES, CRAPS_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
+import { POINT_VALUES, FIELD_VALUES, HORN_VALUES, CRAPS_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES, BOX_5_6_8_9 } from './constants';
 
 const buildRollItem = (die1, die2) => {
     const total = die1 + die2;
@@ -54,10 +54,12 @@ const applyOutcomes = (diceRolls = []) => {
     let shooter10Cnt = 0;
     let hornStreakCnt = 0;
     let passStreakCnt = 0;
+    let dontPassStreakCnt = 0;
     let noFieldStreakCnt = 0;
     let noHardWayStreakCnt = 0;
     let sevenStreakCnt = 0;
     let noSevenStreakCnt = 0;
+    let no5689StreakCnt = 0;
     let winStreakCnt = 0;
     let loseStreakCnt = 0;
     let previousOutcome = {
@@ -107,7 +109,7 @@ const applyOutcomes = (diceRolls = []) => {
             shooter9Cnt = 0;
             shooter10Cnt = 0;
             passStreakCnt = 0;
-            noFieldStreakCnt = 0;
+            // noFieldStreakCnt = 0;
         }
         if (wasPointMade) {
             pointValue = null;
@@ -131,6 +133,7 @@ const applyOutcomes = (diceRolls = []) => {
                 }
                 if (wasPointMade) {
                     passStreakCnt++;
+                    dontPassStreakCnt = 0;
                 }
                 if (wasWin || wasPointMade) {
                     winStreakCnt++;
@@ -192,6 +195,7 @@ const applyOutcomes = (diceRolls = []) => {
                     loseStreakCnt = 0;
                 }
             }
+            dontPassStreakCnt++;
             winStreakCnt = 0;
         } else if (isPointEstablished && HORN_VALUES.includes(total)) {
             shooterAfterNewPointRollCnt++;
@@ -247,6 +251,11 @@ const applyOutcomes = (diceRolls = []) => {
         } else {
             noSevenStreakCnt++;
         }
+        if (BOX_5_6_8_9.includes(total)) {
+            no5689StreakCnt = 0;
+        } else {
+            no5689StreakCnt++;
+        }
 
         shooterRollCnt++;
         const outcomeItem = {
@@ -271,6 +280,7 @@ const applyOutcomes = (diceRolls = []) => {
             shooter10Cnt,
             shooterAfterNewPointRollCnt,
             hornStreakCnt,
+            dontPassStreakCnt,
             passStreakCnt,
             noFieldStreakCnt,
             noHardWayStreakCnt,
@@ -278,6 +288,7 @@ const applyOutcomes = (diceRolls = []) => {
             loseStreakCnt,
             winStreakCnt,
             noSevenStreakCnt,
+            no5689StreakCnt,
         };
         const outcome = assign({}, diceRoll, outcomeItem);
         previousOutcome = outcome;
