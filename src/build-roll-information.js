@@ -42,8 +42,6 @@ const generateDiceRolls = (rollCnt, seed) => {
 };
 
 const applyOutcomes = (diceRolls = []) => {
-    //shooterId, outcomeCode (D,P,L,W), outcomeValue, isWin, isLose, isComeoutRoll, isSevenOut, isPass, pointValue, , shooterRollCnt, isPointThenImmediatePass, isPointSevenOut,  shooter10Cnt, shooter4Cnt, hornStreakCnt, passStreakCnt, noFieldStreakCnt, noHardWayStreakCnt, sevenStreakCnt, winStreakCnt, loseStreakCnt
-
     let isPointEstablished = false;
     let pointValue = null;
     let shooter4Cnt = 0;
@@ -132,8 +130,6 @@ const applyOutcomes = (diceRolls = []) => {
                     isPointThenImmediatePass = true;
                 }
                 if (wasPointMade) {
-                    passStreakCnt++;
-                    dontPassStreakCnt = 0;
                 }
                 if (wasWin || wasPointMade) {
                     winStreakCnt++;
@@ -144,6 +140,8 @@ const applyOutcomes = (diceRolls = []) => {
                         winStreakCnt = 0;
                     }
                 }
+                passStreakCnt++;
+                dontPassStreakCnt = 0;
                 loseStreakCnt = 0;
             }
         } else if (!isPointEstablished && PASS_LINE_LOSE_VALUES.includes(total)) {

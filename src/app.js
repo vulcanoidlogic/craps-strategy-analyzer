@@ -6,8 +6,8 @@ import { winLossPassDontPass, analyze } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
-const preLoadedDiceRolls = getDiceRolls(20, 1024);
-// const preLoadedDiceRolls = getDiceRolls(50, 1024);
+// const preLoadedDiceRolls = getDiceRolls(20, 1024);
+const preLoadedDiceRolls = getDiceRolls(50, 1024);
 // const preLoadedDiceRolls = getDiceRolls(1000, 1024);
 // const preLoadedDiceRolls = getDiceRolls(3000, 384328578983);
 // const preLoadedDiceRolls = getDiceRolls(3000, 934348438);
@@ -45,11 +45,13 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     outfile.write(`${JSON.stringify(rollHistory)},\n`);
     return diceRolls.concat(rollHistory);
 }, []);
-outfile.write(']\n');
+outfile.write(']\n\n');
 
 crapsGame.send('LEAVE_GAME');
-outfile.end();
 
 const analysis = analyze(results);
+outfile.write(JSON.stringify(analysis));
+
+outfile.end();
 
 console.log('END');
