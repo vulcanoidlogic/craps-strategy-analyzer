@@ -7,12 +7,13 @@ import { makeBets } from './bets-manager';
 import fs from 'fs';
 
 // const preLoadedDiceRolls = getDiceRolls(20, 1024);
-const preLoadedDiceRolls = getDiceRolls(50, 1024);
+// const preLoadedDiceRolls = getDiceRolls(100, 1024);
+// const preLoadedDiceRolls = getDiceRolls(500, 1024);
 // const preLoadedDiceRolls = getDiceRolls(1000, 1024);
 // const preLoadedDiceRolls = getDiceRolls(3000, 384328578983);
 // const preLoadedDiceRolls = getDiceRolls(3000, 934348438);
 // const preLoadedDiceRolls = getDiceRolls(3000, 2343243);
-// const preLoadedDiceRolls = getDiceRolls(3000, 325532);
+const preLoadedDiceRolls = getDiceRolls(3000, 325532);
 // const preLoadedDiceRolls = getDiceRolls(10000, 1024);
 
 const crapsGame = interpret(createCrapsMachine())

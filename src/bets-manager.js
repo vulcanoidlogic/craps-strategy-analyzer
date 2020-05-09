@@ -10,11 +10,21 @@ const rollIncludes = (diceTotalList = [], { diceTotal = 0 }) => {
     return diceTotalList.includes(diceTotal);
 };
 
+const rollDoesNotInclude = (diceTotalList = [], { diceTotal = 0 }) => {
+    return !diceTotalList.includes(diceTotal);
+};
+
 export const betDefinitions = {
+    two: { payout: 30 / 1, win: rollIncludes.bind(null, [2]), lose: rollDoesNotInclude.bind(null, [2]), canToggleOnOff: false },
+    three: { payout: 15 / 1, win: rollIncludes.bind(null, [3]), lose: rollDoesNotInclude.bind(null, [3]), canToggleOnOff: false },
+    place4: { payout: 9 / 5, win: rollIncludes.bind(null, [4]), lose: isSeven, canToggleOnOff: true },
     place5: { payout: 7 / 5, win: rollIncludes.bind(null, [5]), lose: isSeven, canToggleOnOff: true },
     place6: { payout: 7 / 6, win: rollIncludes.bind(null, [6]), lose: isSeven, canToggleOnOff: true },
     place8: { payout: 7 / 6, win: rollIncludes.bind(null, [8]), lose: isSeven, canToggleOnOff: true },
     place9: { payout: 7 / 5, win: rollIncludes.bind(null, [9]), lose: isSeven, canToggleOnOff: true },
+    place10: { payout: 9 / 5, win: rollIncludes.bind(null, [10]), lose: isSeven, canToggleOnOff: true },
+    eleven: { payout: 15 / 1, win: rollIncludes.bind(null, [11]), lose: rollDoesNotInclude.bind(null, [11]), canToggleOnOff: false },
+    twelve: { payout: 30 / 1, win: rollIncludes.bind(null, [12]), lose: rollDoesNotInclude.bind(null, [12]), canToggleOnOff: false },
     field: { payout: 1, win: rollIncludes.bind(null, FIELD_VALUES), lose: rollIncludes.bind(null, NON_FIELD_VALUES), canToggleOnOff: false },
 };
 
@@ -73,7 +83,7 @@ export const applyBets = (context, event) => {
 
 export const makeBets = (diceRolls, diceRollInfo) => {
     // return assign({}, makeBetsNo5689(diceRolls, diceRollInfo));
-    return assign({}, makeBetsField(diceRolls, diceRollInfo), makeBetsNo5689(diceRolls, diceRollInfo));
+    return assign({}, makeBetsField(diceRolls, diceRollInfo), makeBetsNo5689(diceRolls, diceRollInfo), makeBetsWinStreakCnt(diceRolls, diceRollInfo));
     // return testBets;
 };
 
@@ -114,6 +124,32 @@ export const makeBetsNo5689 = (diceRolls, diceRollInfo) => {
                 place6: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
                 place8: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
                 place9: { amount, betDefinitions: betDefinitions.place9, isOn: true, betOutcome: null },
+            };
+        } else {
+            return {};
+        }
+    }
+};
+
+export const makeBetsWinStreakCnt = (diceRolls, diceRollInfo) => {
+    const previousRoll = last(diceRolls);
+    if (previousRoll) {
+        const { winStreakCnt } = previousRoll;
+        const streakMinumum = 3;
+        const baseBetAmount = 25;
+        if (winStreakCnt >= streakMinumum) {
+            const amount = baseBetAmount;
+
+            return {
+                two: { amount: 10, betDefinitions: betDefinitions.two, isOn: true, betOutcome: null },
+                three: { amount: 10, betDefinitions: betDefinitions.three, isOn: true, betOutcome: null },
+                place4: { amount, betDefinitions: betDefinitions.place4, isOn: true, betOutcome: null },
+                place5: { amount, betDefinitions: betDefinitions.place5, isOn: true, betOutcome: null },
+                place6: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
+                place8: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
+                place9: { amount, betDefinitions: betDefinitions.place9, isOn: true, betOutcome: null },
+                place10: { amount, betDefinitions: betDefinitions.place10, isOn: true, betOutcome: null },
+                twelve: { amount: 10, betDefinitions: betDefinitions.twelve, isOn: true, betOutcome: null },
             };
         } else {
             return {};
