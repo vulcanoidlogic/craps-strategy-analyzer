@@ -3,7 +3,6 @@ import { uniqueId, assign as _assign, get } from 'lodash';
 import { POINT_VALUES, PASS_LINE_WIN_VALUES, PASS_LINE_LOSE_VALUES } from './constants';
 import { reconcileBets, applyBets } from './bets-manager';
 
-// const MOCK = true;
 // Stateless machine definition
 const getDiceTotal = (context, event) => {
     const preLoadedDiceRolls = get(context, 'preLoadedDiceRolls');
@@ -255,23 +254,23 @@ export const createCrapsMachine = (additionalContext) => {
                     pointNumber: null,
                 }),
                 reconcileBetsPointOff: assign((context, event, actionMeta) => {
-                    const bankRoll = reconcileBets('reconcileBetsPointOff', context);
+                    const bankRoll = reconcileBets('reconcileBetsPointOff', context, event);
                     return { rollOutcome: 'INDETERMINATE', bankRoll };
                 }),
                 reconcileBetsNewPoint: assign((context, event, actionMeta) => {
-                    const bankRoll = reconcileBets('reconcileBetsNewPoint', context);
+                    const bankRoll = reconcileBets('reconcileBetsNewPoint', context, event);
                     return { rollOutcome: 'INDETERMINATE', bankRoll };
                 }),
                 reconcileBetsPointPass: assign((context, event, actionMeta) => {
-                    const bankRoll = reconcileBets('reconcileBetsPointPass', context);
+                    const bankRoll = reconcileBets('reconcileBetsPointPass', context, event);
                     return { rollOutcome: 'PASS', bankRoll };
                 }),
                 reconcileBetsPointDontPass: assign((context, event, actionMeta) => {
-                    const bankRoll = reconcileBets('reconcileBetsPointDontPass', context);
+                    const bankRoll = reconcileBets('reconcileBetsPointDontPass', context, event);
                     return { rollOutcome: 'DONT_PASS', bankRoll };
                 }),
                 reconcileBetsPointContinueRoll: assign((context, event, actionMeta) => {
-                    const bankRoll = reconcileBets('reconcileBetsPointContinueRoll', context);
+                    const bankRoll = reconcileBets('reconcileBetsPointContinueRoll', context, event);
                     return { rollOutcome: 'INDETERMINATE', bankRoll };
                 }),
                 makeBets: assign((context, event, actionMeta) => {

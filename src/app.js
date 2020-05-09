@@ -6,14 +6,15 @@ import { winLossPassDontPass, analyze } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
-// const preLoadedDiceRolls = getDiceRolls(20, 1024);
+const preLoadedDiceRolls = getDiceRolls(20, 1024);
 // const preLoadedDiceRolls = getDiceRolls(100, 1024);
 // const preLoadedDiceRolls = getDiceRolls(500, 1024);
 // const preLoadedDiceRolls = getDiceRolls(1000, 1024);
+// const preLoadedDiceRolls = getDiceRolls(3000, 1024);
 // const preLoadedDiceRolls = getDiceRolls(3000, 384328578983);
 // const preLoadedDiceRolls = getDiceRolls(3000, 934348438);
 // const preLoadedDiceRolls = getDiceRolls(3000, 2343243);
-const preLoadedDiceRolls = getDiceRolls(3000, 325532);
+// const preLoadedDiceRolls = getDiceRolls(3000, 325532);
 // const preLoadedDiceRolls = getDiceRolls(10000, 1024);
 
 const crapsGame = interpret(createCrapsMachine())
@@ -33,9 +34,10 @@ outfile.write('[');
 const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     crapsGame.send({ type: 'MAKE_BETS', bets: makeBets(diceRolls, currentDiceRollInfo) });
     crapsGame.send('ROLL_DICE');
-    const diceRolled = crapsGame.send('DICE_ROLLED');
+    const diceRolled = crapsGame.send({ type: 'DICE_ROLLED', diceRollInfo: currentDiceRollInfo });
     const outcomeXStateTarget = values(diceRolled.value)[0];
-    const reconcileBets = crapsGame.send('RECONCILE_BETS');
+    // const reconcileBets = crapsGame.send('RECONCILE_BETS');
+    const reconcileBets = crapsGame.send({ type: 'RECONCILE_BETS', diceRollInfo: currentDiceRollInfo });
     const diceTotal = get(reconcileBets, 'context.diceTotal');
     const shooterId = get(reconcileBets, 'context.shooterId');
     const wlpd = winLossPassDontPass(outcomeXStateTarget);

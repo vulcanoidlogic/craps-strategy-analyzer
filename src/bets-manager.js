@@ -14,7 +14,17 @@ const rollDoesNotInclude = (diceTotalList = [], { diceTotal = 0 }) => {
     return !diceTotalList.includes(diceTotal);
 };
 
-export const betDefinitions = {
+const hardWayWin = (value, { diceTotal = 0, diceRollInfo }) => {
+    const { die1, die2 } = diceRollInfo;
+    return value === diceTotal && die1 === die2;
+};
+
+const hardWayLose = (value, { diceTotal, diceRollInfo }) => {
+    const { die1, die2 } = diceRollInfo;
+    return diceTotal === 7 || (value === diceTotal && die1 !== die2);
+};
+
+const betDefinitions = {
     two: { payout: 30 / 1, win: rollIncludes.bind(null, [2]), lose: rollDoesNotInclude.bind(null, [2]), canToggleOnOff: false },
     three: { payout: 15 / 1, win: rollIncludes.bind(null, [3]), lose: rollDoesNotInclude.bind(null, [3]), canToggleOnOff: false },
     place4: { payout: 9 / 5, win: rollIncludes.bind(null, [4]), lose: isSeven, canToggleOnOff: true },
@@ -26,10 +36,17 @@ export const betDefinitions = {
     eleven: { payout: 15 / 1, win: rollIncludes.bind(null, [11]), lose: rollDoesNotInclude.bind(null, [11]), canToggleOnOff: false },
     twelve: { payout: 30 / 1, win: rollIncludes.bind(null, [12]), lose: rollDoesNotInclude.bind(null, [12]), canToggleOnOff: false },
     field: { payout: 1, win: rollIncludes.bind(null, FIELD_VALUES), lose: rollIncludes.bind(null, NON_FIELD_VALUES), canToggleOnOff: false },
+    hard4: { payout: 7 / 1, win: hardWayWin.bind(null, 4), lose: hardWayLose.bind(null, 4), canToggleOnOff: true },
+    hard6: { payout: 9 / 1, win: hardWayWin.bind(null, 6), lose: hardWayLose.bind(null, 6), canToggleOnOff: true },
+    hard8: { payout: 9 / 1, win: hardWayWin.bind(null, 8), lose: hardWayLose.bind(null, 8), canToggleOnOff: true },
+    hard10: { payout: 7 / 1, win: hardWayWin.bind(null, 10), lose: hardWayLose.bind(null, 10), canToggleOnOff: true },
 };
 
-export const reconcileBets = (testReconcileType, context) => {
-    const diceTotal = context.diceTotal;
+// Called from within XState
+export const reconcileBets = (testReconcileType, context, event) => {
+    // console.log('context, event=', context, event);
+    const { diceTotal } = context;
+    const { diceRollInfo } = event;
     const bets = context.bets;
     let bankRoll = context.bankRoll;
 
@@ -38,7 +55,7 @@ export const reconcileBets = (testReconcileType, context) => {
         const win = get(bet, 'betDefinitions.win');
         const isOn = get(bet, 'isOn');
         if (isOn) {
-            if (win({ diceTotal })) {
+            if (win({ diceTotal, diceRollInfo })) {
                 const payout = get(bet, 'betDefinitions.payout');
                 const amount = get(bet, 'amount');
                 // At first, return amount and force betting again
@@ -50,7 +67,7 @@ export const reconcileBets = (testReconcileType, context) => {
         // Assume decrement from bankRoll when makeBets.  A loss just means we don't receive money back.  Only return amount to bank if did not lose.
         const lose = get(bet, 'betDefinitions.lose');
         if (isOn) {
-            if (!lose({ diceTotal })) {
+            if (!lose({ diceTotal, diceRollInfo })) {
                 const amount = get(bet, 'amount');
                 bankRoll += amount;
             } else {
@@ -61,6 +78,7 @@ export const reconcileBets = (testReconcileType, context) => {
     return bankRoll;
 };
 
+// Called from within XState
 export const applyBets = (context, event) => {
     // const diceTotal = context.diceTotal;
     const bets = event.bets;
@@ -83,7 +101,13 @@ export const applyBets = (context, event) => {
 
 export const makeBets = (diceRolls, diceRollInfo) => {
     // return assign({}, makeBetsNo5689(diceRolls, diceRollInfo));
-    return assign({}, makeBetsField(diceRolls, diceRollInfo), makeBetsNo5689(diceRolls, diceRollInfo), makeBetsWinStreakCnt(diceRolls, diceRollInfo));
+    return assign(
+        {},
+        makeBetsField(diceRolls, diceRollInfo),
+        makeBetsNo5689(diceRolls, diceRollInfo),
+        makeBetsWinStreakCnt(diceRolls, diceRollInfo)
+        // makeBetsHard6(diceRolls, diceRollInfo)
+    );
     // return testBets;
 };
 
@@ -155,4 +179,11 @@ export const makeBetsWinStreakCnt = (diceRolls, diceRollInfo) => {
             return {};
         }
     }
+};
+
+export const makeBetsHard6 = (diceRolls, diceRollInfo) => {
+    const amount = 5;
+    return {
+        hard6: { amount, betDefinitions: betDefinitions.hard6, isOn: true, betOutcome: null },
+    };
 };
