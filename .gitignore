@@ -104,4 +104,4 @@ dist
 .tern-port
 
 #Test Data
-diceRollHistory.txt
+./diceRollHistory.txt
