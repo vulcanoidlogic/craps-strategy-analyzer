@@ -51,6 +51,7 @@ const applyOutcomes = (diceRolls = []) => {
     let shooter9Cnt = 0;
     let shooter10Cnt = 0;
     let hornStreakCnt = 0;
+    let hornSevenStreakCnt = 0;
     let passStreakCnt = 0;
     let dontPassStreakCnt = 0;
     let noFieldStreakCnt = 0;
@@ -58,6 +59,7 @@ const applyOutcomes = (diceRolls = []) => {
     let sevenStreakCnt = 0;
     let noSevenStreakCnt = 0;
     let no5689StreakCnt = 0;
+    let yes5689StreakCnt = 0;
     let winStreakCnt = 0;
     let loseStreakCnt = 0;
     let previousOutcome = {
@@ -68,6 +70,7 @@ const applyOutcomes = (diceRolls = []) => {
         pointValue: null,
         isSevenOut: true,
         hornStreakCnt: 0,
+        hornSevenStreakCnt: 0,
     };
     let shooterRollCnt = 0;
     let shooterAfterNewPointRollCnt = 0;
@@ -207,6 +210,15 @@ const applyOutcomes = (diceRolls = []) => {
                 hornStreakCnt = 0;
             }
         }
+        if ((HORN_VALUES.includes(total) && HORN_VALUES.includes(previousTotal)) || is7) {
+            hornSevenStreakCnt++;
+        } else {
+            if (HORN_VALUES.includes(total) || is7) {
+                hornSevenStreakCnt = 1;
+            } else {
+                hornSevenStreakCnt = 0;
+            }
+        }
         if (total === 4) {
             shooter4Cnt++;
         }
@@ -250,8 +262,10 @@ const applyOutcomes = (diceRolls = []) => {
             noSevenStreakCnt++;
         }
         if (BOX_5_6_8_9.includes(total)) {
+            yes5689StreakCnt++;
             no5689StreakCnt = 0;
         } else {
+            yes5689StreakCnt = 0;
             no5689StreakCnt++;
         }
 
@@ -278,6 +292,7 @@ const applyOutcomes = (diceRolls = []) => {
             shooter10Cnt,
             shooterAfterNewPointRollCnt,
             hornStreakCnt,
+            hornSevenStreakCnt,
             dontPassStreakCnt,
             passStreakCnt,
             noFieldStreakCnt,
@@ -286,6 +301,7 @@ const applyOutcomes = (diceRolls = []) => {
             loseStreakCnt,
             winStreakCnt,
             noSevenStreakCnt,
+            yes5689StreakCnt,
             no5689StreakCnt,
         };
         const outcome = assign({}, diceRoll, outcomeItem);

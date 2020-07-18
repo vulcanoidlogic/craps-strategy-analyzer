@@ -21,15 +21,17 @@ const initialAnalysis = {
     maxShooter10Cnt: 0,
     maxWinStreakCnt: 0,
     maxHornStreakCnt: 0,
+    maxHornSevenStreakCnt: 0,
     maxPassStreakCnt: 0,
     maxLoseStreakCnt: 0,
     maxSevenStreakCnt: 0,
-    maxNo5689StreakCnt: 0,
     maxNoFieldStreakCnt: 0,
     maxNoSevenStreakCnt: 0,
     maxDontPassStreakCnt: 0,
     maxNoHardWayStreakCnt: 0,
     maxPointSevenOutStreakCnt: 0,
+    maxYes5689StreakCnt: 0,
+    maxNo5689StreakCnt: 0,
     gtThresholdWinStreakCnt: 0,
     gtThresholdSevenStreakCnt: 0,
     gtThresholdShooter4Cnt: 0,
@@ -62,7 +64,19 @@ const dontPassStreakThreshold = 8;
 export const analyze = (results) => {
     const { max } = Math;
     const analysis = results.reduce((cumulative, result) => {
-        const { winStreakCnt, sevenStreakCnt, passStreakCnt, dontPassStreakCnt, shooter4Cnt, shooter10Cnt, shooterId, isPointSevenOut, isPointEstablished } = result;
+        const {
+            winStreakCnt,
+            sevenStreakCnt,
+            passStreakCnt,
+            dontPassStreakCnt,
+            shooter4Cnt,
+            shooter10Cnt,
+            shooterId,
+            isPointSevenOut,
+            isPointEstablished,
+            yes5689StreakCnt,
+            no5689StreakCnt,
+        } = result;
 
         if (isPointSevenOut) {
             cumulative.helperPSO = cumulative.helperPSO.concat(result);
@@ -97,19 +111,21 @@ export const analyze = (results) => {
         cumulative.maxDontPassStreakCnt = max(result.dontPassStreakCnt, cumulative.maxDontPassStreakCnt);
         cumulative.maxPassStreakCnt = max(result.passStreakCnt, cumulative.maxPassStreakCnt);
         cumulative.maxHornStreakCnt = max(result.hornStreakCnt, cumulative.maxHornStreakCnt);
+        cumulative.maxHornSevenStreakCnt = max(result.hornSevenStreakCnt, cumulative.maxHornSevenStreakCnt);
         cumulative.maxNoHardWayStreakCnt = max(result.noHardWayStreakCnt, cumulative.maxNoHardWayStreakCnt);
         cumulative.maxNoSevenStreakCnt = max(result.noSevenStreakCnt, cumulative.maxNoSevenStreakCnt);
         cumulative.maxSevenStreakCnt = max(result.sevenStreakCnt, cumulative.maxSevenStreakCnt);
         cumulative.maxWinStreakCnt = max(winStreakCnt, cumulative.maxWinStreakCnt);
         cumulative.maxLoseStreakCnt = max(result.loseStreakCnt, cumulative.maxLoseStreakCnt);
         cumulative.maxNoFieldStreakCnt = max(result.noFieldStreakCnt, cumulative.maxNoFieldStreakCnt);
-        cumulative.maxNo5689StreakCnt = max(result.no5689StreakCnt, cumulative.maxNo5689StreakCnt);
         cumulative.maxShooter4Cnt = max(result.shooter4Cnt, cumulative.maxShooter4Cnt);
         cumulative.maxShooter5Cnt = max(result.shooter5Cnt, cumulative.maxShooter5Cnt);
         cumulative.maxShooter6Cnt = max(result.shooter6Cnt, cumulative.maxShooter6Cnt);
         cumulative.maxShooter8Cnt = max(result.shooter8Cnt, cumulative.maxShooter8Cnt);
         cumulative.maxShooter9Cnt = max(result.shooter9Cnt, cumulative.maxShooter9Cnt);
         cumulative.maxShooter10Cnt = max(result.shooter10Cnt, cumulative.maxShooter10Cnt);
+        cumulative.maxYes5689StreakCnt = max(result.yes5689StreakCnt, cumulative.maxYes5689StreakCnt);
+        cumulative.maxNo5689StreakCnt = max(result.no5689StreakCnt, cumulative.maxNo5689StreakCnt);
         cumulative.helperShooter4Cnt = shooter4Cnt;
         cumulative.helperShooter10Cnt = shooter10Cnt;
         cumulative.helperShooterId = shooterId;

@@ -6,16 +6,18 @@ import { winLossPassDontPass, analyze } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
-// const preLoadedDiceRolls = getDiceRolls(20, 1024);
-// const preLoadedDiceRolls = getDiceRolls(100, 1024);
-// const preLoadedDiceRolls = getDiceRolls(500, 1024);
-// const preLoadedDiceRolls = getDiceRolls(1000, 1024);
-// const preLoadedDiceRolls = getDiceRolls(3000, 1024);
-// const preLoadedDiceRolls = getDiceRolls(3000, 384328578983);
-// const preLoadedDiceRolls = getDiceRolls(3000, 934348438);
-// const preLoadedDiceRolls = getDiceRolls(3000, 2343243);
-// const preLoadedDiceRolls = getDiceRolls(3000, 325532);
-const preLoadedDiceRolls = getDiceRolls(10000, 1024);
+// const rollCnt = 20;
+// const rollCnt = 100;
+// const rollCnt = 500;
+// const rollCnt = 1000;
+// const rollCnt = 3000;
+const rollCnt = 10000;
+// const diceRollSeed = 384328578983;
+// const diceRollSeed = 934348438;
+const diceRollSeed = 2343243;
+// const diceRollSeed = 325532;
+// const diceRollSeed = 1024;
+const preLoadedDiceRolls = getDiceRolls(rollCnt, diceRollSeed);
 
 const crapsGame = interpret(createCrapsMachine())
     // .onTransition((state) => console.log(state.value))
@@ -44,7 +46,7 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     const rollCnt = get(reconcileBets, 'context.rollCnt');
     const bets = get(reconcileBets, 'context.bets');
     const bankRoll = get(reconcileBets, 'context.bankRoll');
-    const rollHistory = assign(currentDiceRollInfo, { diceTotal, shooterId, outcomeTarget: outcomeXStateTarget, wlpd, rollCnt, bets, bankRoll });
+    const rollHistory = assign(currentDiceRollInfo, { diceTotal, shooterId, outcomeTarget: outcomeXStateTarget, wlpd, rollCnt, bets, bankRoll, rollCnt, diceRollSeed });
     outfile.write(`${JSON.stringify(rollHistory)},\n`);
     return diceRolls.concat(rollHistory);
 }, []);
