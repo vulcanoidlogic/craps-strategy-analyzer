@@ -1,4 +1,5 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, noop, forEach } from 'lodash';
+import { max, mean, median, deviation, group, quantile } from 'd3-array';
 // win, loss, pass, dont-pass
 export const winLossPassDontPass = (wlpd) => {
     const lookup = {
@@ -59,8 +60,8 @@ const dontPassStreakThreshold = 8;
 
 // Fire bet
 // Can we do anything with loseStreakCnt?
-// sevenStreakCnt
-
+// is there a difference between sevenStreakCnt and shooterSevenCnt?
+//
 export const analyze = (results) => {
     const { max } = Math;
     const analysis = results.reduce((cumulative, result) => {
@@ -135,4 +136,52 @@ export const analyze = (results) => {
         return cumulative;
     }, initialAnalysis);
     return analysis;
+};
+
+const printStats = (results, prop = 'sevenStreakCnt', f = noop) => {
+    // const prop = 'sevenStreakCnt';
+    // const prop = 'winStreakCnt';
+    const curMax = max(results, f);
+    const curMean = mean(results, f);
+    const curMedian = median(results, f);
+    const curDeviation = deviation(results, f);
+    // const curVariance = variance(results, f);
+    console.log(
+        `===========================\ngetStats ${prop}\n===========================\nprop=${prop}, \ncurMax=${curMax}, \ncurMean=${curMean}, \ncurMedian=${curMedian}, \ncurDeviation=${curDeviation}`
+    );
+};
+
+export const getStatsPointSevenOut = (results, prop = 'isPointSevenOut') => {
+    const f = (d) => (d[prop] === true ? `${prop}True` : `${prop}False`);
+    const frequencyFalse = group(results, f).get(`${prop}False`);
+    const frequencyTrue = group(results, f).get(`${prop}True`);
+
+    console.log(`Frequency 0: ${frequencyFalse.length}`);
+
+    let prevRollCnt = 0;
+    let streakCnt = 1;
+
+    const g = (d) => d.count;
+    const trueCnts = group(
+        frequencyTrue.reduce((cumulativeCnts, item) => {
+            if (item.rollCnt - prevRollCnt === 2) {
+                ++streakCnt;
+            } else {
+                streakCnt = 1;
+            }
+            prevRollCnt = item.rollCnt;
+
+            return cumulativeCnts.concat({ count: streakCnt });
+        }, []),
+        g
+    );
+
+    trueCnts.forEach((item, key) => {
+        console.log(`Frequency ${key}: ${item.length}`);
+    });
+};
+
+export const getStats = (results, prop = 'sevenStreakCnt') => {
+    const f = (d) => d[prop];
+    printStats(results, prop, f);
 };

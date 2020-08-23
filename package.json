@@ -21,6 +21,7 @@
     },
     "homepage": "https://github.com/vulcanoidlogic/craps-strategy-analyzer#readme",
     "dependencies": {
+        "d3-array": "^2.5.1",
         "esm": "^3.2.25",
         "lodash": "^4.17.15",
         "random-js": "^2.1.0",
