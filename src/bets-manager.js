@@ -103,7 +103,7 @@ export const makeBets = (diceRolls, diceRollInfo) => {
     // return assign({}, makeBetsNo5689(diceRolls, diceRollInfo));
     return assign(
         {},
-        makeBetsField(diceRolls, diceRollInfo),
+        // makeBetsField(diceRolls, diceRollInfo),
         makeBetsNo5689(diceRolls, diceRollInfo),
         makeBetsWinStreakCnt(diceRolls, diceRollInfo)
         // makeBetsHard6(diceRolls, diceRollInfo)

@@ -26,11 +26,11 @@ const crapsGame = interpret(createCrapsMachine())
 crapsGame.send({ type: 'JOIN_GAME', bankRoll: 1000, preLoadedDiceRolls: preLoadedDiceRolls.map(({ total }) => total) });
 
 const outfile = fs.createWriteStream('diceRollHistory.txt', { flags: 'w' });
-outfile.write('[');
-preLoadedDiceRolls.forEach(({ total }, index) => {
-    outfile.write(`${total},`);
-});
-outfile.write(']\n\n');
+// outfile.write('[');
+// preLoadedDiceRolls.forEach(({ total }, index) => {
+//     outfile.write(`${total},`);
+// });
+// outfile.write(']\n\n');
 
 outfile.write('[');
 const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
@@ -38,7 +38,6 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     crapsGame.send('ROLL_DICE');
     const diceRolled = crapsGame.send({ type: 'DICE_ROLLED', diceRollInfo: currentDiceRollInfo });
     const outcomeXStateTarget = values(diceRolled.value)[0];
-    // const reconcileBets = crapsGame.send('RECONCILE_BETS');
     const reconcileBets = crapsGame.send({ type: 'RECONCILE_BETS', diceRollInfo: currentDiceRollInfo });
     const diceTotal = get(reconcileBets, 'context.diceTotal');
     const shooterId = get(reconcileBets, 'context.shooterId');
@@ -46,7 +45,16 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
     const rollCnt = get(reconcileBets, 'context.rollCnt');
     const bets = get(reconcileBets, 'context.bets');
     const bankRoll = get(reconcileBets, 'context.bankRoll');
-    const rollHistory = assign(currentDiceRollInfo, { diceTotal, shooterId, outcomeTarget: outcomeXStateTarget, wlpd, rollCnt, bets, bankRoll, rollCnt, diceRollSeed });
+    const rollHistory = assign(currentDiceRollInfo, {
+        diceTotal,
+        shooterId,
+        outcomeTarget: outcomeXStateTarget,
+        wlpd,
+        rollCnt,
+        bets,
+        bankRoll,
+        diceRollSeed: `S: ${diceRollSeed}`,
+    });
     outfile.write(`${JSON.stringify(rollHistory)},\n`);
     return diceRolls.concat(rollHistory);
 }, []);
