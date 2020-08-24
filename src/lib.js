@@ -1,5 +1,5 @@
 import { isEmpty, noop, forEach } from 'lodash';
-import { max, mean, median, deviation, group, quantile } from 'd3-array';
+import { max, mean, median, deviation, group, count } from 'd3-array';
 // win, loss, pass, dont-pass
 export const winLossPassDontPass = (wlpd) => {
     const lookup = {
@@ -147,21 +147,40 @@ const printStats = (results, prop = 'sevenStreakCnt', f = noop) => {
     const curDeviation = deviation(results, f);
     // const curVariance = variance(results, f);
     console.log(
-        `===========================\ngetStats ${prop}\n===========================\nprop=${prop}, \ncurMax=${curMax}, \ncurMean=${curMean}, \ncurMedian=${curMedian}, \ncurDeviation=${curDeviation}`
+        `\n===========================\ngetStats ${prop}\n===========================\nprop=${prop}, \nmax=${curMax}, \nmean=${curMean}, \nmedian=${curMedian}, \ndeviation=${curDeviation}`
     );
+    console.log(`===========================`);
 };
 
-export const getStatsPointSevenOut = (results, prop = 'isPointSevenOut') => {
-    const f = (d) => (d[prop] === true ? `${prop}True` : `${prop}False`);
-    const frequencyFalse = group(results, f).get(`${prop}False`);
-    const frequencyTrue = group(results, f).get(`${prop}True`);
+export const getFrequencyPointSevenOut = (results) => {
+    const prop = 'isPointSevenOut';
+    // Separate into True (PSO), False (not PSO), and ignore
+    const groupByRollSession = (d) => {
+        if (d[prop] === true) {
+            return `${prop}True`;
+        } else if (d.outcomeValue !== null) {
+            return `${prop}False`;
+        } else {
+            return `${prop}IrrelevantForCalculation`;
+        }
+    };
+
+    const frequencyTrue = group(results, groupByRollSession).get(`${prop}True`);
+    const frequencyFalse = group(results, groupByRollSession).get(`${prop}False`);
+
+    console.log(`\n===========================\nFrequency Point Seven Out\n===========================`);
+
+    // Total number of roll sessions (includes pass and don't pass).
+    // This is *NOT* per shooter - it's per outcome.
+    const totalRollSessions = group(results, (d) => (d.outcomeValue === null ? 'ZERO' : 'ONE')).get('ONE').length;
+    console.log(`Total roll sessions: ${totalRollSessions}`);
+    console.log(`Percent PSO: ${Number(frequencyTrue.length / totalRollSessions).toFixed(4)}`);
 
     console.log(`Frequency 0: ${frequencyFalse.length}`);
 
     let prevRollCnt = 0;
     let streakCnt = 1;
-
-    const g = (d) => d.count;
+    const groupByStreakCnt = (d) => d.streakCnt;
     const trueCnts = group(
         frequencyTrue.reduce((cumulativeCnts, item) => {
             if (item.rollCnt - prevRollCnt === 2) {
@@ -170,15 +189,15 @@ export const getStatsPointSevenOut = (results, prop = 'isPointSevenOut') => {
                 streakCnt = 1;
             }
             prevRollCnt = item.rollCnt;
-
-            return cumulativeCnts.concat({ count: streakCnt });
+            return cumulativeCnts.concat({ streakCnt });
         }, []),
-        g
+        groupByStreakCnt
     );
 
     trueCnts.forEach((item, key) => {
         console.log(`Frequency ${key}: ${item.length}`);
     });
+    console.log(`===========================`);
 };
 
 export const getStats = (results, prop = 'sevenStreakCnt') => {

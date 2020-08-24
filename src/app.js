@@ -2,7 +2,7 @@ import { interpret } from 'xstate';
 import { getDiceRolls } from './build-roll-information.js';
 import { createCrapsMachine } from './craps-machine';
 import { get, values, assign } from 'lodash';
-import { winLossPassDontPass, analyze, getStats, getStatsPointSevenOut } from './lib';
+import { winLossPassDontPass, analyze, getStats, getFrequencyPointSevenOut } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
@@ -21,13 +21,10 @@ const diceRollSeed = 2343243;
 // const diceRollSeed = 325532;
 // const diceRollSeed = 1024;
 const preLoadedDiceRolls = getDiceRolls(rollCnt, diceRollSeed);
-console.log('Finished preLoadedDiceRolls');
 
 const crapsGame = interpret(createCrapsMachine())
     // .onTransition((state) => console.log(state.value))
     .start();
-
-console.log('Started crapsGame');
 
 crapsGame.send({ type: 'JOIN_GAME', bankRoll: 1000, preLoadedDiceRolls: preLoadedDiceRolls.map(({ total }) => total) });
 
@@ -66,19 +63,15 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
 }, []);
 outfile.write(']\n\n');
 
-console.log('Sending Leave Game to crapsGame');
-
 crapsGame.send('LEAVE_GAME');
 
 const analysis = analyze(results);
 outfile.write(JSON.stringify(analysis));
 
-console.log('Finished analyze');
-
 outfile.end();
 
 getStats(results, 'sevenStreakCnt');
 getStats(results, 'noFieldStreakCnt');
-getStatsPointSevenOut(results, 'isPointSevenOut');
+getFrequencyPointSevenOut(results);
 
 console.log('END OF APP');
