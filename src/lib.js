@@ -1,5 +1,5 @@
-import { isEmpty, noop, forEach } from 'lodash';
-import { max, mean, median, deviation, group, count } from 'd3-array';
+import { isEmpty, noop, last, sortBy } from 'lodash';
+import { max, mean, median, deviation, group, rollup } from 'd3-array';
 // win, loss, pass, dont-pass
 export const winLossPassDontPass = (wlpd) => {
     const lookup = {
@@ -166,17 +166,21 @@ export const getFrequencyPointSevenOut = (results) => {
     };
 
     const frequencyTrue = group(results, groupByRollSession).get(`${prop}True`);
-    const frequencyFalse = group(results, groupByRollSession).get(`${prop}False`);
+    const frequencyFalse = rollup(results, (v) => v.length, groupByRollSession).get(`${prop}False`);
 
     console.log(`\n===========================\nFrequency Point Seven Out\n===========================`);
 
-    // Total number of roll sessions (includes pass and don't pass).
-    // This is *NOT* per shooter - it's per outcome.
-    const totalRollSessions = group(results, (d) => (d.outcomeValue === null ? 'ZERO' : 'ONE')).get('ONE').length;
+    // Total number of roll sessions.  Each pass is considered a roll session even if same shooter passes multiple times.
+    // This is per outcome - *NOT* per shooter.
+    const totalRollSessions = rollup(
+        results,
+        (v) => v.length,
+        (d) => (d.outcomeValue === null ? '' : 'ROLL_SESSION')
+    ).get('ROLL_SESSION');
     console.log(`Total roll sessions: ${totalRollSessions}`);
     console.log(`Percent PSO: ${Number(frequencyTrue.length / totalRollSessions).toFixed(4)}`);
 
-    console.log(`Frequency 0: ${frequencyFalse.length}`);
+    console.log(`Frequency 0: ${frequencyFalse}`);
 
     let prevRollCnt = 0;
     let streakCnt = 1;
@@ -197,6 +201,38 @@ export const getFrequencyPointSevenOut = (results) => {
     trueCnts.forEach((item, key) => {
         console.log(`Frequency ${key}: ${item.length}`);
     });
+    console.log(`===========================`);
+};
+
+export const getFrequencyByShooter = (results, prop = 'shooter10Cnt') => {
+    console.log(`\n===========================\nFrequency ${prop}\n===========================`);
+
+    // Total number of roll sessions.  Each pass is considered a roll session even if same shooter passes multiple times.
+    // This is per outcome - *NOT* per shooter.
+    const rollSessionsByShooterId = group(
+        results,
+        (d) => d.shooterId,
+        (d) => (d.outcomeValue === null ? '' : 'ROLL_SESSION')
+    );
+
+    const freqArr = [];
+    rollSessionsByShooterId.forEach((item, key) => {
+        const shooterRollSessions = item.get('ROLL_SESSION');
+        if (shooterRollSessions) {
+            const finalRollSession = last(shooterRollSessions);
+            freqArr.push({ [prop]: `${finalRollSession[prop]}` });
+        }
+    });
+
+    rollup(
+        sortBy(freqArr, (obj) => Number(obj[prop])),
+        (v) => v.length,
+        (d) => d[prop]
+    ).forEach((freqCnt, key) => {
+        console.log(`freqCnts ${key} = ${freqCnt}`);
+    });
+
+    console.log(`Shooter Count ${freqArr.length}`);
     console.log(`===========================`);
 };
 
