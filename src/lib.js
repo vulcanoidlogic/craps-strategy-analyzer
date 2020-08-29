@@ -152,9 +152,29 @@ const printStats = (results, prop = 'sevenStreakCnt', f = noop) => {
     console.log(`===========================`);
 };
 
+export const getFrequencySevenStreakCnt = (results) => {
+    const prop = 'sevenStreakCnt';
+
+    console.log(`\n===========================\nFrequency sevenStreakCnt\n===========================`);
+
+    let totalSevenCnt = 0;
+    rollup(
+        results,
+        (v) => v.length,
+        (d) => d[prop]
+    ).forEach((freqCnt, key) => {
+        if (key > 0) totalSevenCnt += freqCnt;
+        console.log(`freqCnts ${key} = ${freqCnt}`);
+    });
+    console.log(`Total 7 Count = ${totalSevenCnt}`);
+    console.log(`Percent 7 Expect = ${Number(1 / 6).toFixed(4)}`);
+    console.log(`Percent 7 Actual = ${Number(totalSevenCnt / results.length).toFixed(4)}`);
+    console.log(`===========================`);
+};
+
 export const getFrequencyPointSevenOut = (results) => {
     const prop = 'isPointSevenOut';
-    // Separate into True (PSO), False (not PSO), and ignore
+    // Separate into True (PSO), False (not PSO), and other
     const groupByRollSession = (d) => {
         if (d[prop] === true) {
             return `${prop}True`;
@@ -168,16 +188,19 @@ export const getFrequencyPointSevenOut = (results) => {
     const frequencyTrue = group(results, groupByRollSession).get(`${prop}True`);
     const frequencyFalse = rollup(results, (v) => v.length, groupByRollSession).get(`${prop}False`);
 
-    console.log(`\n===========================\nFrequency Point Seven Out\n===========================`);
+    console.log(`\n===========================\nFrequency Outcome PSO\n===========================`);
 
     // Total number of roll sessions.  Each pass is considered a roll session even if same shooter passes multiple times.
     // This is per outcome - *NOT* per shooter.
+    // PSO includes a shooter passing one or more times then establish point, and seven-out.
+    // It's any seven-out after point is established.
+    // The frequency represents number of times in a row a PSO happened.
     const totalRollSessions = rollup(
         results,
         (v) => v.length,
         (d) => (d.outcomeValue === null ? '' : 'ROLL_SESSION')
     ).get('ROLL_SESSION');
-    console.log(`Total roll sessions: ${totalRollSessions}`);
+    console.log(`Total outcomes: ${totalRollSessions}`);
     console.log(`Percent PSO: ${Number(frequencyTrue.length / totalRollSessions).toFixed(4)}`);
 
     console.log(`Frequency 0: ${frequencyFalse}`);

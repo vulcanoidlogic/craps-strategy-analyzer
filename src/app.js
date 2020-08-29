@@ -2,7 +2,7 @@ import { interpret } from 'xstate';
 import { getDiceRolls } from './build-roll-information.js';
 import { createCrapsMachine } from './craps-machine';
 import { get, values, assign } from 'lodash';
-import { winLossPassDontPass, analyze, getStats, getFrequencyPointSevenOut, getFrequencyByShooter } from './lib';
+import { winLossPassDontPass, analyze, getStats, getFrequencyPointSevenOut, getFrequencyByShooter, getFrequencySevenStreakCnt } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
@@ -80,5 +80,7 @@ getFrequencyByShooter(results, 'shooter6Cnt');
 getFrequencyByShooter(results, 'shooter8Cnt');
 getFrequencyByShooter(results, 'shooter9Cnt');
 getFrequencyByShooter(results, 'shooter10Cnt');
+getFrequencySevenStreakCnt(results);
 
 console.log('END OF APP');
+console.log('\n\n');
