@@ -2,16 +2,25 @@ import { interpret } from 'xstate';
 import { getDiceRolls } from './build-roll-information.js';
 import { createCrapsMachine } from './craps-machine';
 import { get, values, assign } from 'lodash';
-import { winLossPassDontPass, analyze, getStats, getFrequencyPointSevenOut, getFrequencyByShooter, getFrequencySevenStreakCnt } from './lib';
+import {
+    winLossPassDontPass,
+    analyze,
+    getStats,
+    getFrequencyPointSevenOut,
+    getRollCountByShooter,
+    getFrequencyTotalByShooter,
+    getFrequencySevenStreakCnt,
+    getTotalStreakBeforeSeven as getDiceTotalCountBeforeSeven,
+} from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
 
 // const rollCnt = 20;
 // const rollCnt = 100;
 // const rollCnt = 500;
-const rollCnt = 1000;
+// const rollCnt = 1000;
 // const rollCnt = 3000;
-// const rollCnt = 10000;
+const rollCnt = 10000;
 // const rollCnt = 20000;
 // const rollCnt = 30000;
 // const rollCnt = 40000;
@@ -73,13 +82,15 @@ outfile.end();
 getStats(results, 'sevenStreakCnt');
 getStats(results, 'noFieldStreakCnt');
 getFrequencyPointSevenOut(results);
-getFrequencyByShooter(results, 'shooterRollCnt');
-getFrequencyByShooter(results, 'shooter4Cnt');
-getFrequencyByShooter(results, 'shooter5Cnt');
-getFrequencyByShooter(results, 'shooter6Cnt');
-getFrequencyByShooter(results, 'shooter8Cnt');
-getFrequencyByShooter(results, 'shooter9Cnt');
-getFrequencyByShooter(results, 'shooter10Cnt');
+getRollCountByShooter(results, 'shooterRollCnt');
+getFrequencyTotalByShooter(results, 'shooter4Cnt', 4);
+getFrequencyTotalByShooter(results, 'shooter5Cnt', 5);
+getFrequencyTotalByShooter(results, 'shooter6Cnt', 6);
+getFrequencyTotalByShooter(results, 'shooter8Cnt', 8);
+getFrequencyTotalByShooter(results, 'shooter9Cnt', 9);
+getFrequencyTotalByShooter(results, 'shooter10Cnt', 10);
+getDiceTotalCountBeforeSeven(results, 4);
+getDiceTotalCountBeforeSeven(results, 10);
 getFrequencySevenStreakCnt(results);
 
 console.log('END OF APP');

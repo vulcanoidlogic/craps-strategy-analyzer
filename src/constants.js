@@ -8,3 +8,4 @@ export const PASS_LINE_WIN_VALUES = [7, 11];
 export const PASS_LINE_LOSE_VALUES = [2, 3, 12];
 export const MAX_ROLL_CNT = 12;
 export const BOX_5_6_8_9 = [5, 6, 8, 9];
+export const DICE_TOTAL_PROBABILITIES = { T2: 1 / 36, T3: 2 / 36, T4: 3 / 36, T5: 4 / 36, T6: 5 / 36, T7: 6 / 36, T8: 5 / 36, T9: 4 / 36, T10: 3 / 36, T11: 2 / 36, T12: 1 / 36 };

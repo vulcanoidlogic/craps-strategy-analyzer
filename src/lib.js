@@ -1,5 +1,7 @@
-import { isEmpty, noop, last, sortBy } from 'lodash';
+import { isEmpty, noop, last, sortBy, keys } from 'lodash';
 import { max, mean, median, deviation, group, rollup } from 'd3-array';
+import { DICE_TOTAL_PROBABILITIES } from './constants';
+
 // win, loss, pass, dont-pass
 export const winLossPassDontPass = (wlpd) => {
     const lookup = {
@@ -139,13 +141,10 @@ export const analyze = (results) => {
 };
 
 const printStats = (results, prop = 'sevenStreakCnt', f = noop) => {
-    // const prop = 'sevenStreakCnt';
-    // const prop = 'winStreakCnt';
     const curMax = max(results, f);
     const curMean = mean(results, f);
     const curMedian = median(results, f);
     const curDeviation = deviation(results, f);
-    // const curVariance = variance(results, f);
     console.log(
         `\n===========================\ngetStats ${prop}\n===========================\nprop=${prop}, \nmax=${curMax}, \nmean=${curMean}, \nmedian=${curMedian}, \ndeviation=${curDeviation}`
     );
@@ -166,9 +165,20 @@ export const getFrequencySevenStreakCnt = (results) => {
         if (key > 0) totalSevenCnt += freqCnt;
         console.log(`freqCnts ${key} = ${freqCnt}`);
     });
-    console.log(`Total 7 Count = ${totalSevenCnt}`);
-    console.log(`Percent 7 Expect = ${Number(1 / 6).toFixed(4)}`);
-    console.log(`Percent 7 Actual = ${Number(totalSevenCnt / results.length).toFixed(4)}`);
+
+    console.log(`Expect 7 Count = ${Number((1 / 6) * results.length).toFixed(4)}`);
+    console.log(`Actual 7 Count = ${totalSevenCnt}`);
+    console.log(`----------------------------`);
+    console.log(`Freq 1 Expect = ${Number(Math.pow(1 / 6, 1) * results.length).toFixed(4)}`);
+    console.log(`Freq 2 Expect = ${Number(Math.pow(1 / 6, 2) * results.length).toFixed(4)}`);
+    console.log(`Freq 3 Expect = ${Number(Math.pow(1 / 6, 3) * results.length).toFixed(4)}`);
+    console.log(`Freq 4 Expect = ${Number(Math.pow(1 / 6, 4) * results.length).toFixed(4)}`);
+    console.log(`Freq 5 Expect = ${Number(Math.pow(1 / 6, 5) * results.length).toFixed(4)}`);
+    console.log(`Freq 6 Expect = ${Number(Math.pow(1 / 6, 6) * results.length).toFixed(4)}`);
+    console.log(`Freq 7 Expect = ${Number(Math.pow(1 / 6, 7) * results.length).toFixed(4)}`);
+    console.log(`Freq 8 Expect = ${Number(Math.pow(1 / 6, 8) * results.length).toFixed(4)}`);
+    console.log(`Freq 9 Expect = ${Number(Math.pow(1 / 6, 9) * results.length).toFixed(4)}`);
+    console.log(`Freq 10 Expect = ${Number(Math.pow(1 / 6, 10) * results.length).toFixed(4)}`);
     console.log(`===========================`);
 };
 
@@ -198,8 +208,8 @@ export const getFrequencyPointSevenOut = (results) => {
     const totalRollSessions = rollup(
         results,
         (v) => v.length,
-        (d) => (d.outcomeValue === null ? '' : 'ROLL_SESSION')
-    ).get('ROLL_SESSION');
+        (d) => (d.outcomeValue === null ? '' : 'SHOOTER_SESSION')
+    ).get('SHOOTER_SESSION');
     console.log(`Total outcomes: ${totalRollSessions}`);
     console.log(`Percent PSO: ${Number(frequencyTrue.length / totalRollSessions).toFixed(4)}`);
 
@@ -227,20 +237,18 @@ export const getFrequencyPointSevenOut = (results) => {
     console.log(`===========================`);
 };
 
-export const getFrequencyByShooter = (results, prop = 'shooter10Cnt') => {
+export const getRollCountByShooter = (results, prop = 'shooterRollCnt') => {
     console.log(`\n===========================\nFrequency ${prop}\n===========================`);
 
-    // Total number of roll sessions.  Each pass is considered a roll session even if same shooter passes multiple times.
-    // This is per outcome - *NOT* per shooter.
     const rollSessionsByShooterId = group(
         results,
         (d) => d.shooterId,
-        (d) => (d.outcomeValue === null ? '' : 'ROLL_SESSION')
+        (d) => (d.outcomeValue === null ? '' : 'SHOOTER_SESSION')
     );
 
     const freqArr = [];
     rollSessionsByShooterId.forEach((item, key) => {
-        const shooterRollSessions = item.get('ROLL_SESSION');
+        const shooterRollSessions = item.get('SHOOTER_SESSION');
         if (shooterRollSessions) {
             const finalRollSession = last(shooterRollSessions);
             freqArr.push({ [prop]: `${finalRollSession[prop]}` });
@@ -256,6 +264,76 @@ export const getFrequencyByShooter = (results, prop = 'shooter10Cnt') => {
     });
 
     console.log(`Shooter Count ${freqArr.length}`);
+    console.log(`===========================`);
+};
+
+export const getFrequencyTotalByShooter = (results, prop = 'shooter10Cnt', diceTotal) => {
+    console.log(`\n===========================\nFrequency ${prop}\n===========================`);
+
+    const rollSessionsByShooterId = group(
+        results,
+        (d) => d.shooterId,
+        (d) => (d.outcomeValue === null ? '' : 'SHOOTER_SESSION')
+    );
+
+    const freqArr = [];
+    rollSessionsByShooterId.forEach((item, key) => {
+        const shooterRollSessions = item.get('SHOOTER_SESSION');
+        if (shooterRollSessions) {
+            const finalRollSession = last(shooterRollSessions);
+            freqArr.push({ [prop]: `${finalRollSession[prop]}` });
+        }
+    });
+
+    let totalCnt = 0;
+    rollup(
+        sortBy(freqArr, (obj) => Number(obj[prop])),
+        (v) => v.length,
+        (d) => d[prop]
+    ).forEach((freqCnt, key) => {
+        totalCnt += Number(key) * freqCnt;
+        console.log(`freqCnts ${key} = ${freqCnt}`);
+    });
+
+    console.log(`Shooter Count ${freqArr.length}`);
+
+    const diceTotalProbability = DICE_TOTAL_PROBABILITIES[`T${diceTotal}`];
+
+    if (diceTotalProbability) {
+        console.log(`----------------------------`);
+        console.log(`Count Expect = ${Number(Math.pow(diceTotalProbability, 1) * results.length).toFixed(4)}`);
+        console.log(`Count Actual = ${totalCnt}`);
+    }
+
+    console.log(`===========================`);
+};
+
+export const getTotalStreakBeforeSeven = (results, diceTotal) => {
+    console.log(`\n===========================\n${diceTotal} Count Before Seven \n===========================`);
+
+    let diceTotalCnt = 0;
+    const diceTotalCnts = results.reduce((cumulative, current) => {
+        if (current.total === diceTotal) {
+            diceTotalCnt++;
+        } else if (current.total === 7) {
+            const curProp = `Freq ${`${diceTotalCnt}`.padStart(2, '0')}`;
+            if (cumulative[curProp] === undefined) {
+                cumulative[curProp] = diceTotalCnt;
+            } else {
+                cumulative[curProp] = ++cumulative[curProp];
+            }
+
+            diceTotalCnt = 0;
+        }
+        return cumulative;
+    }, {});
+
+    keys(diceTotalCnts)
+        .sort()
+        .forEach((diceTotalCntsKey) => {
+            console.log(`${diceTotalCntsKey} = ${diceTotalCnts[diceTotalCntsKey]}`);
+        });
+
     console.log(`===========================`);
 };
 
