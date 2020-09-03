@@ -316,7 +316,7 @@ export const getTotalStreakBeforeSeven = (results, diceTotal) => {
         if (current.total === diceTotal) {
             diceTotalCnt++;
         } else if (current.total === 7) {
-            const curProp = `Freq ${`${diceTotalCnt}`.padStart(2, '0')}`;
+            const curProp = `Freq ${diceTotalCnt.toString().padStart(2, '0')}`;
             if (cumulative[curProp] === undefined) {
                 cumulative[curProp] = diceTotalCnt;
             } else {

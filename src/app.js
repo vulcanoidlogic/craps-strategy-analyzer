@@ -20,13 +20,13 @@ import fs from 'fs';
 // const rollCnt = 500;
 // const rollCnt = 1000;
 // const rollCnt = 3000;
-const rollCnt = 10000;
+// const rollCnt = 10000;
 // const rollCnt = 20000;
 // const rollCnt = 30000;
-// const rollCnt = 40000;
+const rollCnt = 40000;
 // const diceRollSeed = 384328578983;
-// const diceRollSeed = 934348438;
-const diceRollSeed = 2343243;
+const diceRollSeed = 934348438;
+// const diceRollSeed = 2343243;
 // const diceRollSeed = 325532;
 // const diceRollSeed = 1024;
 const preLoadedDiceRolls = getDiceRolls(rollCnt, diceRollSeed);
@@ -67,7 +67,7 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
         bankRoll,
         diceRollSeed: `S: ${diceRollSeed}`,
     });
-    outfile.write(`${JSON.stringify(rollHistory)},\n`);
+    // outfile.write(`${JSON.stringify(rollHistory)},\n`);
     return diceRolls.concat(rollHistory);
 }, []);
 outfile.write(']\n\n');
@@ -75,7 +75,7 @@ outfile.write(']\n\n');
 crapsGame.send('LEAVE_GAME');
 
 const analysis = analyze(results);
-outfile.write(JSON.stringify(analysis));
+// outfile.write(JSON.stringify(analysis));
 
 outfile.end();
 
@@ -90,6 +90,10 @@ getFrequencyTotalByShooter(results, 'shooter8Cnt', 8);
 getFrequencyTotalByShooter(results, 'shooter9Cnt', 9);
 getFrequencyTotalByShooter(results, 'shooter10Cnt', 10);
 getDiceTotalCountBeforeSeven(results, 4);
+getDiceTotalCountBeforeSeven(results, 5);
+getDiceTotalCountBeforeSeven(results, 6);
+getDiceTotalCountBeforeSeven(results, 8);
+getDiceTotalCountBeforeSeven(results, 9);
 getDiceTotalCountBeforeSeven(results, 10);
 getFrequencySevenStreakCnt(results);
 
