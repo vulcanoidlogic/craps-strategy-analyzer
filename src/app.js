@@ -10,7 +10,8 @@ import {
     getRollCountByShooter,
     getFrequencyTotalByShooter,
     getFrequencySevenStreakCnt,
-    getTotalStreakBeforeSeven as getDiceTotalCountBeforeSeven,
+    getDiceTotalCountBeforeSeven,
+    getWLPDFrequency,
 } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
@@ -96,6 +97,7 @@ getDiceTotalCountBeforeSeven(results, 8);
 getDiceTotalCountBeforeSeven(results, 9);
 getDiceTotalCountBeforeSeven(results, 10);
 getFrequencySevenStreakCnt(results);
+getWLPDFrequency(results);
 
 console.log('END OF APP');
 console.log('\n\n');

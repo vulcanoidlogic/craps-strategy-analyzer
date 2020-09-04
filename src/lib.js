@@ -308,7 +308,7 @@ export const getFrequencyTotalByShooter = (results, prop = 'shooter10Cnt', diceT
     console.log(`===========================`);
 };
 
-export const getTotalStreakBeforeSeven = (results, diceTotal) => {
+export const getDiceTotalCountBeforeSeven = (results, diceTotal) => {
     console.log(`\n===========================\n${diceTotal} Count Before Seven \n===========================`);
 
     let diceTotalCnt = 0;
@@ -333,6 +333,56 @@ export const getTotalStreakBeforeSeven = (results, diceTotal) => {
         .forEach((diceTotalCntsKey) => {
             console.log(`${diceTotalCntsKey} = ${diceTotalCnts[diceTotalCntsKey]}`);
         });
+
+    console.log(`===========================`);
+};
+
+export const getWLPDFrequency = (results) => {
+    const prop = 'wlpd';
+    console.log(`\n===========================\nFrequency ${prop}\n===========================`);
+
+    let winPassTotal = 0;
+    let loseDontTotal = 0;
+    let passTotal = 0;
+    let winTotal = 0;
+    let dontTotal = 0;
+    let loseTotal = 0;
+    rollup(
+        results,
+        (v) => v.length,
+        (d) => d[prop]
+    ).forEach((freqCnt, key) => {
+        console.log(`WLPD ${key} = ${freqCnt}`);
+        if (key === 'D') {
+            loseDontTotal += freqCnt;
+            dontTotal += freqCnt;
+        }
+        if (key === 'L') {
+            loseDontTotal += freqCnt;
+            loseTotal += freqCnt;
+        }
+        if (key === 'P') {
+            winPassTotal += freqCnt;
+            passTotal += freqCnt;
+        }
+        if (key === 'W') {
+            winPassTotal += freqCnt;
+            winTotal += freqCnt;
+        }
+    });
+
+    const totalNumberOutcomes = winPassTotal + loseDontTotal;
+    console.log(`Total # Outcomes: ${totalNumberOutcomes}`);
+    console.log(`Win/Pass Total: ${winPassTotal}`);
+    console.log(`Lose/Dont Total: ${loseDontTotal}`);
+    console.log(`Percent W/P = ${Number(winPassTotal / totalNumberOutcomes).toFixed(4)}`);
+    console.log(`Percent L/D = ${Number(loseDontTotal / totalNumberOutcomes).toFixed(4)}`);
+    console.log(`Percent P = ${Number(passTotal / (passTotal + dontTotal)).toFixed(4)}`);
+    console.log(`Expected W = ${Number(DICE_TOTAL_PROBABILITIES.T7 + DICE_TOTAL_PROBABILITIES.T11).toFixed(4)}`);
+    console.log(`Actual W = ${Number(winTotal / totalNumberOutcomes).toFixed(4)}`);
+    console.log(`Percent D = ${Number(dontTotal / (passTotal + dontTotal)).toFixed(4)}`);
+    console.log(`Expected L = ${Number(DICE_TOTAL_PROBABILITIES.T2 + DICE_TOTAL_PROBABILITIES.T3 + DICE_TOTAL_PROBABILITIES.T12).toFixed(4)}`);
+    console.log(`Actual L = ${Number(loseTotal / totalNumberOutcomes).toFixed(4)}`);
 
     console.log(`===========================`);
 };
