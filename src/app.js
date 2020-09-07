@@ -12,6 +12,7 @@ import {
     getFrequencySevenStreakCnt,
     getDiceTotalCountBeforeSeven,
     getWLPDFrequency,
+    writeBetOutcomes,
 } from './lib';
 import { makeBets } from './bets-manager';
 import fs from 'fs';
@@ -68,7 +69,8 @@ const results = preLoadedDiceRolls.reduce((diceRolls, currentDiceRollInfo) => {
         bankRoll,
         diceRollSeed: `S: ${diceRollSeed}`,
     });
-    // outfile.write(`${JSON.stringify(rollHistory)},\n`);
+    // outfile.write(`${rollHistory},\n`);
+    outfile.write(`${JSON.stringify(rollHistory, null, 2)},\n`);
     return diceRolls.concat(rollHistory);
 }, []);
 outfile.write(']\n\n');
@@ -98,6 +100,12 @@ getDiceTotalCountBeforeSeven(results, 9);
 getDiceTotalCountBeforeSeven(results, 10);
 getFrequencySevenStreakCnt(results);
 getWLPDFrequency(results);
+
+const betOutcomesFile = fs.createWriteStream('betOutcomes.txt', { flags: 'w' });
+betOutcomesFile.write('[');
+writeBetOutcomes(betOutcomesFile, results);
+betOutcomesFile.write(']\n\n');
+betOutcomesFile.end();
 
 console.log('END OF APP');
 console.log('\n\n');

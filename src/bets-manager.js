@@ -1,6 +1,6 @@
 import { forEach, get, last, assign } from 'lodash';
 import { FIELD_VALUES, NON_FIELD_VALUES } from './constants';
-import { roundToNext6 } from './lib';
+import { roundToNext6 as roundToNext6or8Amount } from './lib';
 
 const isSeven = ({ diceTotal = 0 }) => {
     return diceTotal === 7;
@@ -24,7 +24,7 @@ const hardWayLose = (value, { diceTotal, diceRollInfo }) => {
     return diceTotal === 7 || (value === diceTotal && die1 !== die2);
 };
 
-const betDefinitions = {
+export const betDefinitions = {
     two: { payout: 30 / 1, win: rollIncludes.bind(null, [2]), lose: rollDoesNotInclude.bind(null, [2]), canToggleOnOff: false },
     three: { payout: 15 / 1, win: rollIncludes.bind(null, [3]), lose: rollDoesNotInclude.bind(null, [3]), canToggleOnOff: false },
     place4: { payout: 9 / 5, win: rollIncludes.bind(null, [4]), lose: isSeven, canToggleOnOff: true },
@@ -145,8 +145,8 @@ export const makeBetsNo5689 = (diceRolls, diceRollInfo) => {
 
             return {
                 place5: { amount, betDefinitions: betDefinitions.place5, isOn: true, betOutcome: null },
-                place6: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
-                place8: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
+                place6: { amount: roundToNext6or8Amount(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
+                place8: { amount: roundToNext6or8Amount(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
                 place9: { amount, betDefinitions: betDefinitions.place9, isOn: true, betOutcome: null },
             };
         } else {
@@ -169,8 +169,8 @@ export const makeBetsWinStreakCnt = (diceRolls, diceRollInfo) => {
                 three: { amount: 10, betDefinitions: betDefinitions.three, isOn: true, betOutcome: null },
                 place4: { amount, betDefinitions: betDefinitions.place4, isOn: true, betOutcome: null },
                 place5: { amount, betDefinitions: betDefinitions.place5, isOn: true, betOutcome: null },
-                place6: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
-                place8: { amount: roundToNext6(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
+                place6: { amount: roundToNext6or8Amount(amount), betDefinitions: betDefinitions.place6, isOn: true, betOutcome: null },
+                place8: { amount: roundToNext6or8Amount(amount), betDefinitions: betDefinitions.place8, isOn: true, betOutcome: null },
                 place9: { amount, betDefinitions: betDefinitions.place9, isOn: true, betOutcome: null },
                 place10: { amount, betDefinitions: betDefinitions.place10, isOn: true, betOutcome: null },
                 twelve: { amount: 10, betDefinitions: betDefinitions.twelve, isOn: true, betOutcome: null },
@@ -186,4 +186,14 @@ export const makeBetsHard6 = (diceRolls, diceRollInfo) => {
     return {
         hard6: { amount, betDefinitions: betDefinitions.hard6, isOn: true, betOutcome: null },
     };
+};
+
+export const getBetOutcome = (betId, result) => {
+    if (betDefinitions[betId].win(result)) {
+        return 1;
+    } else if (betDefinitions[betId].lose(result)) {
+        return -1;
+    } else {
+        return 0;
+    }
 };

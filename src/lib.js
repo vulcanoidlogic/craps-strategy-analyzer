@@ -1,6 +1,7 @@
-import { isEmpty, noop, last, sortBy, keys } from 'lodash';
+import { isEmpty, noop, last, sortBy, keys, get } from 'lodash';
 import { max, mean, median, deviation, group, rollup } from 'd3-array';
 import { DICE_TOTAL_PROBABILITIES } from './constants';
+import { betDefinitions, getBetOutcome } from './bets-manager';
 
 // win, loss, pass, dont-pass
 export const winLossPassDontPass = (wlpd) => {
@@ -195,7 +196,7 @@ export const getFrequencyPointSevenOut = (results) => {
         }
     };
 
-    const frequencyTrue = group(results, groupByRollSession).get(`${prop}True`);
+    const frequencyTrue = group(results, groupByRollSession).get(`${prop}True`) || [];
     const frequencyFalse = rollup(results, (v) => v.length, groupByRollSession).get(`${prop}False`);
 
     console.log(`\n===========================\nFrequency Outcome PSO\n===========================`);
@@ -263,7 +264,7 @@ export const getRollCountByShooter = (results, prop = 'shooterRollCnt') => {
         console.log(`freqCnts ${key} = ${freqCnt}`);
     });
 
-    console.log(`Shooter Count ${freqArr.length}`);
+    console.log(`Distinct Shooter Count ${freqArr.length}`);
     console.log(`===========================`);
 };
 
@@ -295,7 +296,7 @@ export const getFrequencyTotalByShooter = (results, prop = 'shooter10Cnt', diceT
         console.log(`freqCnts ${key} = ${freqCnt}`);
     });
 
-    console.log(`Shooter Count ${freqArr.length}`);
+    console.log(`Distinct Shooter Count ${freqArr.length}`);
 
     const diceTotalProbability = DICE_TOTAL_PROBABILITIES[`T${diceTotal}`];
 
@@ -385,6 +386,21 @@ export const getWLPDFrequency = (results) => {
     console.log(`Actual L = ${Number(loseTotal / totalNumberOutcomes).toFixed(4)}`);
 
     console.log(`===========================`);
+};
+
+export const writeBetOutcomes = (file, results) => {
+    results.forEach((result, resultIdx) => {
+        const outcome = {
+            total: get(result, 'total'),
+            place4: getBetOutcome('place4', result),
+            place5: getBetOutcome('place5', result),
+            place6: getBetOutcome('place6', result),
+            place8: getBetOutcome('place8', result),
+            place9: getBetOutcome('place9', result),
+            place10: getBetOutcome('place10', result),
+        };
+        // file.write(`${JSON.stringify(outcome)},\n`);
+    });
 };
 
 export const getStats = (results, prop = 'sevenStreakCnt') => {
