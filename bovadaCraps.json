@@ -1,0 +1,574 @@
+[
+    {
+        "date": "2020-09-18",
+        "shooters": [
+            {
+                "index": 1,
+                "rolls": [
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "0-1",
+                "rollCount": 6
+            },
+            {
+                "index": 2,
+                "rolls": [
+                    { "diceTotal": 10, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": true,
+                "passLine7Count": 0,
+                "wlpd": "0-2",
+                "rollCount": 2
+            },
+            {
+                "index": 3,
+                "rolls": [
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 11, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 8, "outcome": "P" },
+                    { "diceTotal": 2, "outcome": "L" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "1-4",
+                "rollCount": 16
+            },
+            {
+                "index": 4,
+                "rolls": [
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 5, "outcome": "P" },
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 5, "outcome": "P" },
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 3 },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "3-5",
+                "rollCount": 17
+            },
+            {
+                "index": 5,
+                "rolls": [
+                    { "diceTotal": 2, "outcome": "L" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "3-7",
+                "rollCount": 3
+            },
+            {
+                "index": 6,
+                "rolls": [
+                    { "diceTotal": 11, "outcome": "W" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "4-8",
+                "rollCount": 3
+            },
+            {
+                "index": 7,
+                "rolls": [
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 4, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 6, "outcome": "P" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 3 },
+                    { "diceTotal": 4, "outcome": "P" },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 1,
+                "wlpd": "8-10",
+                "rollCount": 11
+            },
+            {
+                "index": 8,
+                "rolls": [
+                    { "diceTotal": 10, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 11, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "8-11",
+                "rollCount": 8
+            },
+            {
+                "index": 9,
+                "rolls": [
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 4, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "9-12",
+                "rollCount": 6
+            },
+            {
+                "index": 10,
+                "rolls": [
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 8, "outcome": "P" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "10-14",
+                "rollCount": 7
+            },
+            {
+                "index": 11,
+                "rolls": [
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": true,
+                "passLine7Count": 0,
+                "wlpd": "10-15",
+                "rollCount": 2
+            },
+            {
+                "index": 12,
+                "rolls": [
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "10-16",
+                "rollCount": 9
+            },
+            {
+                "index": 13,
+                "rolls": [
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "10-17",
+                "rollCount": 3
+            },
+            {
+                "index": 14,
+                "rolls": [
+                    { "diceTotal": 9, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 9, "outcome": "P" },
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "11-19",
+                "rollCount": 8
+            },
+            {
+                "index": 15,
+                "rolls": [
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "11-20",
+                "rollCount": 3
+            },
+            {
+                "index": 16,
+                "rolls": [
+                    { "diceTotal": 10, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "11-21",
+                "rollCount": 5
+            },
+            {
+                "index": 17,
+                "rolls": [
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 8, "outcome": "P" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 1,
+                "wlpd": "13-23",
+                "rollCount": 10
+            },
+            {
+                "index": 18,
+                "rolls": [
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 4, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 1,
+                "wlpd": "15-24",
+                "rollCount": 9
+            },
+            {
+                "index": 19,
+                "rolls": [
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 2, "outcome": null },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "15-25",
+                "rollCount": 7
+            },
+            {
+                "index": 20,
+                "rolls": [
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 6, "outcome": "P" },
+                    { "diceTotal": 10, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 10, "outcome": "P" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 3 },
+                    { "diceTotal": 8, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "18-26",
+                "rollCount": 13
+            },
+            {
+                "index": 21,
+                "rolls": [
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 11, "outcome": null },
+                    { "diceTotal": 2, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "18-27",
+                "rollCount": 9
+            }
+        ]
+    },
+    {
+        "date": "2020-09-19",
+        "shooters": [
+            {
+                "index": 1,
+                "rolls": [
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "0-2",
+                "rollCount": 4
+            },
+            {
+                "index": 2,
+                "rolls": [
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 11, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "0-1",
+                "rollCount": 7
+            },
+            {
+                "index": 3,
+                "rolls": [
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 5, "outcome": "P" },
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "1-1",
+                "rollCount": 7
+            },
+            {
+                "index": 4,
+                "rolls": [
+                    { "diceTotal": 9, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "0-1",
+                "rollCount": 15
+            },
+            {
+                "index": 5,
+                "rolls": [
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "0-1",
+                "rollCount": 3
+            },
+            {
+                "index": 6,
+                "rolls": [
+                    { "diceTotal": 11, "outcome": "W" },
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "1-1",
+                "rollCount": 7
+            },
+            {
+                "index": 7,
+                "rolls": [
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 4, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 1,
+                "wlpd": "0-1",
+                "rollCount": 16
+            },
+            {
+                "index": 8,
+                "rolls": [
+                    { "diceTotal": 10, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 10, "outcome": "W" },
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "1-2",
+                "rollCount": 14
+            },
+            {
+                "index": 9,
+                "rolls": [
+                    { "diceTotal": 4, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 9, "outcome": null },
+                    { "diceTotal": 12, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 4, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 6, "outcome": "P" },
+                    { "diceTotal": 2, "outcome": "L" },
+                    { "diceTotal": 11, "outcome": "W" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 3 },
+                    { "diceTotal": 8, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 4 },
+                    { "diceTotal": 6, "outcome": "P" },
+                    { "diceTotal": 6, "outcome": null, "newPointCount": 5 },
+                    { "diceTotal": 5, "outcome": null },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 2, "outcome": null },
+                    { "diceTotal": 6, "outcome": "P" },
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 10, "outcome": null, "newPointCount": 6 },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 1,
+                "wlpd": "7-2",
+                "rollCount": 23
+            },
+            {
+                "index": 10,
+                "rolls": [
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 3, "outcome": "L" },
+                    { "diceTotal": 8, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 8, "outcome": "P" },
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 9, "outcome": null, "newPointCount": 2 },
+                    { "diceTotal": 9, "outcome": "P" },
+                    { "diceTotal": 7, "outcome": "W" },
+                    { "diceTotal": 9, "outcome": null, "newPointCount": 3 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 3,
+                "wlpd": "5-2",
+                "rollCount": 12
+            },
+            {
+                "index": 11,
+                "rolls": [
+                    { "diceTotal": 5, "outcome": null, "newPointCount": 1 },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 2, "outcome": null },
+                    { "diceTotal": 8, "outcome": null },
+                    { "diceTotal": 6, "outcome": null },
+                    { "diceTotal": 3, "outcome": null },
+                    { "diceTotal": 10, "outcome": null },
+                    { "diceTotal": 7, "outcome": "D" }
+                ],
+                "isPSO": false,
+                "passLine7Count": 0,
+                "wlpd": "0-1",
+                "rollCount": 8
+            }
+        ]
+    },
+    { "cumulativeWLPD": "33-40" }
+]
